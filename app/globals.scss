@@ -9,6 +9,7 @@
     --background-white: #ffffff;
     --color-primary: #392de2;
     --color-transparant: #00000047;
+    --color-page: #f6f6f6;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,10 +41,31 @@ body {
     }
 }
 
+section {
+    padding: 20px;
+}
+
 .bgr-primary {
     background-color: var(--color-primary);
 }
 
 .bgr-transparant {
     background-color: var(--color-transparant);
+}
+
+.bgr-page {
+    background-color: var(--color-page);
+}
+
+.txt-primary {
+    color: var(--color-primary)
+}
+
+.button {
+    transition: ease-in-out 0.5s;
+
+    :active {
+        transition: ease 0.5s;
+        transform: scale(90%);
+    }
 }

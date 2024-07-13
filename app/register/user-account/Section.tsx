@@ -75,7 +75,6 @@ const Section = () => {
                 }, 3000)
             }
         }
-        console.log(data);
     }
 
     const onChangeConfirmPassword = (e: string) => {
