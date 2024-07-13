@@ -1,11 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --background-white: #ffffff;
+  --color-primary: #392de2;
+  --color-transparant: #00000047;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -15,15 +17,17 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
+@font-face {
+  font-family: "lemonmilk";
+  src: url("/font/lemonmilk.otf") format("woff2");
+}
+@font-face {
+  font-family: "gonserat";
+  src: url("/font/gonserat.ttf") format("woff2");
+}
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background-color: var(--background-white);
+  font-family: "gonserat";
 }
 
 @layer utilities {
@@ -31,3 +35,12 @@ body {
     text-wrap: balance;
   }
 }
+.bgr-primary {
+  background-color: var(--color-primary);
+}
+
+.bgr-transparant {
+  background-color: var(--color-transparant);
+}
+
+/*# sourceMappingURL=globals.css.map */
