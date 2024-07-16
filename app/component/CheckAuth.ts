@@ -7,7 +7,7 @@ async function checkAuth(request: NextRequest) {
     const API_URL = process.env.API_URL
     const access_token = Cookies.get('access_token')
     try {
-        const response = await axios.get(`${API_URL}/api/auth/check-auth`, {
+        const response = await axios.get(`${API_URL}/api/user/auth/check-auth`, {
             headers: {
                 Authorization: `Bearer ${access_token}`
             }

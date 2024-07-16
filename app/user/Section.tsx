@@ -7,6 +7,7 @@ import { userDTO } from '@/model/user.model';
 import Cookies from "js-cookie";
 import axios from 'axios';
 import { Alert, Button, Divider, Skeleton, TextField } from '@mui/material';
+import FormUpdateAddress from '../component/user/FormUpdateAddress';
 
 const Section = () => {
     const [profile, setProfile] = useState<userDTO | undefined>(undefined)
@@ -18,7 +19,7 @@ const Section = () => {
     const getProfile = async () => {
         try {
             try {
-                const response = await axios.get(`${API_URL}/api/user/profile`, {
+                const response = await axios.get(`${API_URL}/api/user/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -50,8 +51,8 @@ const Section = () => {
                 const formData = new FormData()
                 formData.append('email', `${profile?.email}`)
                 formData.append('fullName', `${profile?.fullName}`)
-                formData.append('address', `${profile?.address}`)
-                const response = await axios.put(`${API_URL}/api/user/update/profile`, formData, {
+                formData.append('address', `${profile?.addressId}`)
+                const response = await axios.put(`${API_URL}/api/user/user/update/profile`, formData, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -93,19 +94,12 @@ const Section = () => {
                                         </div>
                                     </div>
                                 </button>
-                                {updateProfileSuccess && <Alert className='mt-3' severity="success">Data profil berhasil diperbarui</Alert>}
+                                {updateProfileSuccess &&
+                                    <div className='mt-3 fixed top-32 right-3 z-50'>
+                                        <Alert className='shadow-lg' severity="success">Data profil berhasil diperbarui</Alert>
+                                    </div>
+                                }
                                 <div className="flex flex-col gap-4 mt-5">
-                                    {/* <div className="grid lg:md:grid-cols-10 items-start">
-                                        <div className="col-lg:md:span-2">id</div>
-                                        <div className="col-lg:md:block hidden span-1">:</div>
-                                        <div className="colg:md:l-span-7">
-                                            {profile ?
-                                                profile.id
-                                                :
-                                                <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-                                            }
-                                        </div>
-                                    </div> */}
                                     <div className="grid lg:md:grid-cols-10 items-start">
                                         <div className="lg:md:col-span-2">Email</div>
                                         <div className="lg:md:block hidden col-span-1">:</div>
@@ -128,21 +122,12 @@ const Section = () => {
                                             }
                                         </div>
                                     </div>
-                                    <div className="grid lg:md:grid-cols-10 items-start">
-                                        <div className="lg:md:col-span-2">Alamat</div>
-                                        <div className="lg:md:block hidden col-span-1">:</div>
-                                        <div className="lg:md:col-span-7">
-                                            {profile ?
-                                                <TextField name="address" id="outlined-basic" onChange={handleChange} rows={4} multiline className='w-full' value={profile.address ? profile.address : ''} variant="outlined" />
-                                                :
-                                                <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
-                                            }
-                                        </div>
-                                    </div>
+
                                     <Button onClick={handleUpdateProfile} variant="contained" disableElevation>
                                         SIMPAN
                                     </Button>
                                 </div>
+                                <FormUpdateAddress />
                             </div>
                         </div>
                     </div>
@@ -155,7 +140,7 @@ const Section = () => {
                     </div>
                 </div>
             </div>
-        </section>
+        </section >
     )
 }
 

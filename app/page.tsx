@@ -7,7 +7,7 @@ import Navbar from "./component/user/Navbar";
 
 export default function Home() {
   return (
-    <main className="min-h-screen w-screen flex">
+    <main className="min-h-screen flex">
       <Sidebar>
         <SidebarItem />
       </Sidebar>

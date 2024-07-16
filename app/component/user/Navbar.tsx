@@ -1,5 +1,5 @@
 'use client'
-import { Label, Logout, PersonAdd, Settings } from '@mui/icons-material'
+import { Home, Label, Logout, Person, PersonAdd, Settings } from '@mui/icons-material'
 import { Avatar, Box, Divider, FormControl, IconButton, InputAdornment, ListItemIcon, Menu, MenuItem, OutlinedInput, Tooltip } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { userDTO } from '@/model/user.model';
 import axios from 'axios';
 import Image from 'next/image';
+import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
+import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
 const Navbar = () => {
     const [profile, setProfile] = useState<userDTO>({})
 
@@ -35,13 +37,11 @@ const Navbar = () => {
 
     const getProfile = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/user/profile`, {
+            const response = await axios.get(`${API_URL}/api/user/user/profile`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             })
-
-            console.log(response.data);
 
             if (response.data.success) {
                 setProfile(response.data.data)
@@ -74,22 +74,48 @@ const Navbar = () => {
                     />
                 </FormControl>
             </div>
-            <div className="">
+            <div className="flex">
+                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                    <Tooltip title="Wishlist">
+                        <IconButton
+                            size="small"
+                            sx={{ ml: 0 }}
+                            aria-haspopup="true"
+                            className='btn-circle overflow-hidden txt-primary'
+                            aria-expanded={open ? 'true' : undefined}
+                        >
+                            <FavoriteBorderOutlinedIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+                    <Tooltip title="Keranjang Belanja">
+                        <IconButton
+                            size="small"
+                            sx={{ ml: 0 }}
+                            aria-haspopup="true"
+                            className='btn-circle overflow-hidden txt-primary'
+                            aria-expanded={open ? 'true' : undefined}
+                        >
+                            <LocalGroceryStoreOutlinedIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
                     <Tooltip title="Account settings">
                         <IconButton
                             onClick={handleClick}
                             size="small"
-                            sx={{ ml: 2 }}
+                            sx={{ ml: 0 }}
                             aria-controls={open ? 'account-menu' : undefined}
                             aria-haspopup="true"
-                            className='btn-circle overflow-hidden'
+                            className='btn-circle overflow-hidden txt-primary'
                             aria-expanded={open ? 'true' : undefined}
                         >
                             {profile.images ?
                                 <Avatar alt='' src={profile.images} />
                                 :
-                                <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                                <Avatar sx={{ width: 32, height: 32 }} />
                             }
                         </IconButton>
                     </Tooltip>
@@ -129,16 +155,19 @@ const Navbar = () => {
                     transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                     anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 >
+                    <MenuItem onClick={() => handleNavigation(`/`)}>
+                        <ListItemIcon>
+                            <Home fontSize="small" />
+                        </ListItemIcon>
+                        Dashboard
+                    </MenuItem>
                     <MenuItem onClick={() => handleNavigation(`${profile.rolesName === 'super' ? '/super/profile' : '/user'}`)}>
-                        <Avatar /> {profile.fullName}
+                        <ListItemIcon>
+                            <Person fontSize="small" />
+                        </ListItemIcon>
+                        {profile.fullName}
                     </MenuItem>
                     {/* <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <PersonAdd fontSize="small" />
-                        </ListItemIcon>
-                        Add another account
-                    </MenuItem>
-                    <MenuItem onClick={handleClose}>
                         <ListItemIcon>
                             <Settings fontSize="small" />
                         </ListItemIcon>

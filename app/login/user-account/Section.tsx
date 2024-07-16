@@ -25,7 +25,7 @@ const Section = () => {
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         try {
-            const response = await axios.post(`${API_URL}/api/auth/login`, data)
+            const response = await axios.post(`${API_URL}/api/user/auth/login`, data)
 
             if (response.data.success) {
                 reset()

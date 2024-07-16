@@ -6,7 +6,7 @@
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --background-white: #ffffff;
-  --color-primary: #392de2;
+  --color-primary: #0a94ea;
   --color-transparant: #00000047;
   --color-page: #f6f6f6;
 }
@@ -26,9 +26,29 @@
   font-family: "gonserat";
   src: url("/font/gonserat.ttf") format("woff2");
 }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 body {
   background-color: var(--background-white);
   font-family: "gonserat";
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
 }
 
 @layer utilities {

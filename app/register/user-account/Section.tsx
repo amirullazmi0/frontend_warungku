@@ -6,8 +6,6 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import axios, { AxiosError } from 'axios';
-import { error } from 'console';
-import Error from 'next/error';
 import { AlertSuccess } from '@/app/component/alert';
 
 const Section = () => {
@@ -49,9 +47,8 @@ const Section = () => {
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         try {
-            const response = await axios.post(`${API_URL}/api/auth/register`, data)
+            const response = await axios.post(`${API_URL}/api/user/auth/register`, data)
 
-            console.log(response.data);
             if (response.data.success) {
                 reset()
                 setSubmitSuccess(true)
