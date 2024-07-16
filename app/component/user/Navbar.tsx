@@ -37,7 +37,7 @@ const Navbar = () => {
 
     const getProfile = async () => {
         try {
-            const response = await axios.get(`${API_URL}/api/user/user/profile`, {
+            const response = await axios.get(`${API_URL}/api/user/profile`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }

@@ -19,7 +19,7 @@ const Section = () => {
     const getProfile = async () => {
         try {
             try {
-                const response = await axios.get(`${API_URL}/api/user/user/profile`, {
+                const response = await axios.get(`${API_URL}/api/user/profile`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -52,7 +52,7 @@ const Section = () => {
                 formData.append('email', `${profile?.email}`)
                 formData.append('fullName', `${profile?.fullName}`)
                 formData.append('address', `${profile?.addressId}`)
-                const response = await axios.put(`${API_URL}/api/user/user/update/profile`, formData, {
+                const response = await axios.put(`${API_URL}/api/user/update/profile`, formData, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }

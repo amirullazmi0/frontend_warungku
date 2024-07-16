@@ -70,7 +70,7 @@ const Section = () => {
         <div className='flex justify-center items-center min-h-screen p-4'>
             <div className="card shadow-lg grid lg:md:grid-cols-2 overflow-hidden min-w-[50vw] bg-white">
                 <div className="card-body">
-                    <div className="font-bold text-2xl e mb-4">
+                    <div className="font-bold text-2xl e mb-4 txt-dark">
                         Login
                     </div>
                     {loginError &&
@@ -122,7 +122,7 @@ const Section = () => {
                         </div>
                     </form>
                     <hr className='mt-3 mb-3' />
-                    <div className="text-xs normal-case text-center">
+                    <div className="text-xs normal-case text-center txt-dark">
                         Belum Punya Akun ? <span><button className=' link-primary' onClick={() => navigation(`/register/user-account`)}>Daftar Sekarang</button></span>
                     </div>
                 </div>

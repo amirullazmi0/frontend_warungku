@@ -95,7 +95,7 @@ const Section = () => {
         <div className='flex justify-center items-center min-h-screen p-4 bgr-primary'>
             <div className="card border shadow overflow-hidden min-w-[50vw] bg-white">
                 <div className="card-body">
-                    <div className="font-bold text-2xl e mb-4">
+                    <div className="font-bold text-2xl e mb-4 txt-dark">
                         SIGN UP
                     </div>
                     {errorSubmit &&
@@ -184,7 +184,7 @@ const Section = () => {
                         </div>
                     </form>
                     <hr className='mt-3 mb-3' />
-                    <div className="text-xs normal-case text-center">
+                    <div className="text-xs normal-case text-center txt-dark">
                         Sudah Punya Akun ? <span><button className=' link-primary' onClick={() => navigation(`/login/user-account`)}>Sign In</button></span>
                     </div>
                 </div>

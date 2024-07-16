@@ -24,30 +24,36 @@ const FormUpdateAddress = () => {
         if (address) {
             try {
                 const formData = new FormData()
-                formData.append('active', `${address?.active}`)
-                formData.append('jalan', `${address?.jalan}`)
-                formData.append('rt', `${address?.rt}`)
-                formData.append('rw', `${address?.rw}`)
-                formData.append('kodepos', `${address?.kodepos}`)
-                formData.append('kelurahan', `${address?.kelurahan}`)
-                formData.append('kecamatan', `${address?.kecamatan}`)
-                formData.append('kota', `${address?.kota}`)
-                formData.append('provinsi', `${address?.provinsi}`)
 
-                const response = await axios.put(`${API_URL}/api/user/user/update/profile/address`, formData, {
+                formData.append('active', `${address.active}`)
+                formData.append('jalan', `${address.jalan}`)
+                formData.append('rt', `${address.rt}`)
+                formData.append('rw', `${address.rw}`)
+                formData.append('kodepos', `${address.kodepos}`)
+                formData.append('kelurahan', `${address.kelurahan}`)
+                formData.append('kecamatan', `${address.kecamatan}`)
+                formData.append('kota', `${address.kota}`)
+                formData.append('provinsi', `${address.provinsi}`)
+
+
+                const response = await axios.put(`${API_URL}/api/user/update/profile/address`, address, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
                 })
 
-                if (response.data.success) {
+                console.log(response.data);
+                
+
+                if (response.data.success == true) {
                     setUpdateAddressSuccess(true)
                     setTimeout(() => {
                         setUpdateAddressSuccess(undefined)
                     }, 5000)
                 }
             } catch (error) {
-
+                console.log(error);
+                
             }
         }
     }
@@ -55,7 +61,7 @@ const FormUpdateAddress = () => {
     const getAddress = async () => {
         try {
             try {
-                const response = await axios.get(`${API_URL}/api/user/user/profile/address`, {
+                const response = await axios.get(`${API_URL}/api/user/profile/address`, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
@@ -91,7 +97,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="jalan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.jalan} variant="outlined" />
+                        <TextField name="jalan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.jalan || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -102,7 +108,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="rt" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.rt} variant="outlined" />
+                        <TextField name="rt" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.rt || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -113,7 +119,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="rw" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.rw} variant="outlined" />
+                        <TextField name="rw" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.rw || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -124,7 +130,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="kodepos" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kodepos} variant="outlined" />
+                        <TextField name="kodepos" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kodepos || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -135,7 +141,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="kelurahan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kelurahan} variant="outlined" />
+                        <TextField name="kelurahan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kelurahan || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -146,7 +152,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="kecamatan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kecamatan} variant="outlined" />
+                        <TextField name="kecamatan" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kecamatan || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -157,7 +163,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="kota" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kota} variant="outlined" />
+                        <TextField name="kota" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.kota || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
@@ -168,7 +174,7 @@ const FormUpdateAddress = () => {
                 <div className="lg:md:block hidden col-span-1">:</div>
                 <div className="lg:md:col-span-7">
                     {address ?
-                        <TextField name="provinsi" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.provinsi} variant="outlined" />
+                        <TextField name="provinsi" onChange={handleChange} id="outlined-basic" className='w-full' value={address?.provinsi || ''} variant="outlined" />
                         :
                         <Skeleton variant="text" sx={{ fontSize: '1rem' }} />
                     }
