@@ -1,39 +1,62 @@
-import React from 'react'
-import Tron from './component/user/Tron'
-import CardItemStore from './component/CardItemStore'
-
+'use client';
+import React, { useEffect, useState } from 'react';
+import Tron from './component/user/Tron';
+import CardItemStore from './component/CardItemStore';
+import { itemStoreType } from './DTO/itemStore';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const Section = () => {
-    return (
-        <section>
-            <Tron />
-            <div className="card bg-white mt-4 shadow-lg">
-                <div className="card-body grid grid-cols-4 gap-4">
-                    <CardItemStore
-                        name='Shoes'
-                        address='Pontianak, Indonesia'
-                        images={'https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.jpg'}
-                        price={154000}
-                        wishlist=''
-                    />
-                    <CardItemStore
-                        name='Kursi Kantor Gaming'
-                        address='Pontianak, Indonesia'
-                        images={'https://telkomschools.sch.id/wp-content/uploads/2020/06/1-3-1.jpg'}
-                        price={50000}
-                        wishlist=''
-                    />
-                    <CardItemStore
-                        name='Table'
-                        address='Pontianak, Indonesia'
-                        images={'https://casamaria.co.uk/cdn/shop/products/RoomRoundHerringULegs_1200x.jpg?v=1669302813'}
-                        price={500000}
-                        wishlist=''
-                    />
-                </div>
-            </div>
-        </section>
-    )
-}
+	const apiUrl = process.env.API_URL;
+	const access_token = Cookies.get('accessToken');
 
-export default Section
+	const [itemStore, setItemStore] = useState<itemStoreType[]>();
+
+	const getData = async () => {
+		try {
+			const response: {
+				data: {
+					data: {
+						record: number;
+						item: itemStoreType[];
+					};
+				};
+			} = await axios.get(`${apiUrl}/api/user/item-store`, {
+				headers: {
+					Authorization: `Bearer ${access_token}`,
+				},
+			});
+
+			if (response.data) {
+				setItemStore(response.data.data.item);
+			}
+		} catch (error) {}
+	};
+
+	useEffect(() => {
+		getData();
+	}, []);
+	return (
+		<section>
+			<Tron />
+			<div className='card bg-white mt-4 shadow-lg'>
+				<div className='card-body grid grid-cols-4 gap-4'>
+					{itemStore?.map((item, index) => {
+						return (
+							<CardItemStore
+								key={index}
+								name={item.name}
+								address={item.storeAddress.provinsi ?? 'indonesia'}
+								images={item.itemStorageImage.path}
+								price={item.price}
+								wishlist=''
+							/>
+						);
+					})}
+				</div>
+			</div>
+		</section>
+	);
+};
+
+export default Section;
