@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
 
 import {
   Card,
@@ -11,15 +12,23 @@ import {
   Button,
   Grid,
   TextField,
+  CircularProgress,
 } from '@mui/material';
+import Image from 'next/image';
 
 interface CartItem {
-  id: string;
-  itemStoreId: string;
-  qty: number;
+  cart_id: string;
+  quantity: number;
+  item_id: string | null;
+  item_name: string | null;
+  item_price: number | null;
+  item_description: string | null;
+  item_image_path: string | null;
+  category_name: string | null;
 }
 
 export default function CartPage() {
+  const router = useRouter();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
@@ -49,15 +58,14 @@ export default function CartPage() {
 
   useEffect(() => {
     fetchCartItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleRemoveItem = async (cartItemId: string) => {
+  const handleRemoveItem = async (cartId: string) => {
     try {
       const response = await axios.delete(`${API_URL}/api/cart/remove`, {
         data: {
           accessToken,
-          itemStoreId: cartItemId,
+          itemStoreId: cartId,
         },
       });
       if (response.data.success) {
@@ -70,11 +78,11 @@ export default function CartPage() {
     }
   };
 
-  const handleUpdateQty = async (cartItemId: string, qty: number) => {
+  const handleUpdateQty = async (cartId: string, qty: number) => {
     try {
       const response = await axios.post(`${API_URL}/api/cart/update-qty`, {
         accessToken,
-        itemStoreId: cartItemId,
+        itemStoreId: cartId,
         qty,
       });
       if (response.data.success) {
@@ -87,10 +95,10 @@ export default function CartPage() {
     }
   };
 
-  const handleQtyChange = (cartItemId: string, newQty: number) => {
+  const handleQtyChange = (cartId: string, newQty: number) => {
     setQuantities((prev) => ({
       ...prev,
-      [cartItemId]: newQty,
+      [cartId]: newQty,
     }));
   };
 
@@ -101,25 +109,61 @@ export default function CartPage() {
       </Typography>
 
       {loading ? (
-        <Typography>Loading...</Typography>
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <CircularProgress />
+        </div>
       ) : cartItems.length === 0 ? (
-        <Typography>No items in your cart.</Typography>
+        <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+          <Typography>No items in your cart.</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => router.push('/browse')}
+          >
+            Browse Items
+          </Button>
+        </div>
       ) : (
         <Grid container spacing={2}>
           {cartItems.map((item) => {
-            const localQty = quantities[item.id] ?? item.qty;
+            const localQty =
+              quantities[item.cart_id] !== undefined
+                ? quantities[item.cart_id]
+                : item.quantity;
+
             return (
-              <Grid item xs={12} md={6} lg={4} key={item.id}>
+              <Grid item xs={12} md={6} lg={4} key={item.cart_id}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent>
-                    <Typography variant="body1">
-                      ItemStore ID: {item.itemStoreId}
+                    {item.item_image_path && (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '200px',
+                          position: 'relative',
+                        }}
+                      >
+                        <Image
+                          src={item.item_image_path}
+                          alt={item.item_name || 'Item Image'}
+                          layout="fill"
+                          objectFit="contain"
+                        />
+                      </div>
+                    )}
+                    <Typography variant="h6" gutterBottom>
+                      {item.item_name || 'Unknown Item'}
                     </Typography>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mt: 1 }}
-                    >
+                    <Typography variant="body1" gutterBottom>
+                      Price: Rp. {item.item_price || 0}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      {item.item_description || 'No description available'}
+                    </Typography>
+                    <Typography variant="body2" gutterBottom>
+                      Category: {item.category_name || 'Uncategorized'}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                       Quantity:
                     </Typography>
                     <TextField
@@ -127,7 +171,7 @@ export default function CartPage() {
                       size="small"
                       value={localQty}
                       onChange={(e) =>
-                        handleQtyChange(item.id, Number(e.target.value))
+                        handleQtyChange(item.cart_id, Number(e.target.value))
                       }
                       inputProps={{ min: 1 }}
                       sx={{ width: '80px' }}
@@ -138,7 +182,7 @@ export default function CartPage() {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={() => handleUpdateQty(item.id, localQty)}
+                      onClick={() => handleUpdateQty(item.cart_id, localQty)}
                     >
                       Update Quantity
                     </Button>
@@ -146,7 +190,7 @@ export default function CartPage() {
                     <Button
                       variant="outlined"
                       color="error"
-                      onClick={() => handleRemoveItem(item.id)}
+                      onClick={() => handleRemoveItem(item.cart_id)}
                     >
                       Remove Item
                     </Button>
