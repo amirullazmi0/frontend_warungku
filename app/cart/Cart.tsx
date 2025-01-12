@@ -23,7 +23,7 @@ interface CartItem {
   item_name: string | null;
   item_price: number | null;
   item_description: string | null;
-  item_image_path: string | null;
+  item_image_paths: string | null;
   category_name: string | null;
 }
 
@@ -172,7 +172,7 @@ export default function CartPage() {
                     <Grid item xs={12} md={6} lg={4} key={item.cart_id}>
                       <Card sx={{ height: '100%' }}>
                         <CardContent>
-                          {item.item_image_path && (
+                          {item.item_image_paths && (
                             <div
                               style={{
                                 width: '100%',
@@ -181,7 +181,7 @@ export default function CartPage() {
                               }}
                             >
                               <Image
-                                src={item.item_image_path}
+                                src={item.item_image_paths}
                                 alt={item.item_name || 'Item Image'}
                                 layout="fill"
                                 objectFit="contain"
