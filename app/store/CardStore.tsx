@@ -20,15 +20,15 @@ const CardStore = (props: Props) => {
 					className='object-cover hover:scale-105 duration-200 w-full'
 				/>
 			</figure>
-			<div className='card-body'>
-				<div className='flex items-center gap-2'>
+			<div className='card-body w-full text-left lg:text-sm md:text-xs text-[8px] lg:p-4 md:p-2 p-1'>
+				<div className='flex items-center gap-2 badge badge-warning'>
 					<svg
 						xmlns='http://www.w3.org/2000/svg'
 						fill='none'
 						viewBox='0 0 24 24'
 						strokeWidth={1.5}
 						stroke='currentColor'
-						className='size-6'>
+						className='size-4'>
 						<path
 							strokeLinecap='round'
 							strokeLinejoin='round'
@@ -41,8 +41,8 @@ const CardStore = (props: Props) => {
 					<div className='txt-primary'>
 						<PlaceIcon />
 					</div>
-					<div className='lg:text-md md:text-sm text-[10px]'>
-						{props.kecamatan} {props.kota && `, ${props.kecamatan}`}
+					<div className='lg:text-xs md:text-xs text-[10px]'>
+						{props.kecamatan} {props.kota && `, ${props.kota}`}
 					</div>
 				</div>
 			</div>
