@@ -181,7 +181,7 @@ export default function CartPage() {
                               }}
                             >
                               <Image
-                                src={item.item_image_paths}
+                                src={item.item_image_paths[0]}
                                 alt={item.item_name || 'Item Image'}
                                 layout="fill"
                                 objectFit="contain"
