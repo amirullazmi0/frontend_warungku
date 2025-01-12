@@ -8,9 +8,9 @@ import Navbar from "./component/user/Navbar";
 export default function Home() {
   return (
     <main className="min-h-screen flex">
-      <Sidebar>
+      {/* <Sidebar>
         <SidebarItem />
-      </Sidebar>
+      </Sidebar> */}
       <MainPage>
         <Navbar />
         <Section />
