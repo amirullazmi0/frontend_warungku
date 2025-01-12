@@ -27,9 +27,18 @@ interface CartItem {
   category_name: string | null;
 }
 
+interface StoreGroup {
+  store_id: string | null;
+  store_name: string | null;
+  store_email: string | null;
+  store_bio: string | null;
+  store_logo: string | null;
+  items: CartItem[];
+}
+
 export default function CartPage() {
   const router = useRouter();
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [storeGroups, setStoreGroups] = useState<StoreGroup[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
 
@@ -45,7 +54,7 @@ export default function CartPage() {
         },
       });
       if (res.data.success) {
-        setCartItems(res.data.data);
+        setStoreGroups(res.data.data);
       } else {
         console.error('Failed to fetch cart items:', res.data);
       }
@@ -112,7 +121,7 @@ export default function CartPage() {
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <CircularProgress />
         </div>
-      ) : cartItems.length === 0 ? (
+      ) : storeGroups.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <Typography>No items in your cart.</Typography>
           <Button
@@ -124,82 +133,121 @@ export default function CartPage() {
           </Button>
         </div>
       ) : (
-        <Grid container spacing={2}>
-          {cartItems.map((item) => {
-            const localQty =
-              quantities[item.cart_id] !== undefined
-                ? quantities[item.cart_id]
-                : item.quantity;
+        <div>
+          {storeGroups.map((store) => (
+            <div
+              key={store.store_id || 'unknown-store'}
+              style={{ marginBottom: '2rem' }}
+            >
+              {/* Store Information */}
+              <Typography variant="h5" gutterBottom>
+                {store.store_name || 'Unknown Store'}
+              </Typography>
+              {store.store_logo && (
+                <div
+                  style={{
+                    width: '100px',
+                    height: '100px',
+                    position: 'relative',
+                    marginBottom: '1rem',
+                  }}
+                >
+                  <Image
+                    src={store.store_logo}
+                    alt={store.store_name || 'Store Logo'}
+                    layout="fill"
+                    objectFit="contain"
+                  />
+                </div>
+              )}
 
-            return (
-              <Grid item xs={12} md={6} lg={4} key={item.cart_id}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    {item.item_image_path && (
-                      <div
-                        style={{
-                          width: '100%',
-                          height: '200px',
-                          position: 'relative',
-                        }}
-                      >
-                        <Image
-                          src={item.item_image_path}
-                          alt={item.item_name || 'Item Image'}
-                          layout="fill"
-                          objectFit="contain"
-                        />
-                      </div>
-                    )}
-                    <Typography variant="h6" gutterBottom>
-                      {item.item_name || 'Unknown Item'}
-                    </Typography>
-                    <Typography variant="body1" gutterBottom>
-                      Price: Rp. {item.item_price || 0}
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                      {item.item_description || 'No description available'}
-                    </Typography>
-                    <Typography variant="body2" gutterBottom>
-                      Category: {item.category_name || 'Uncategorized'}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Quantity:
-                    </Typography>
-                    <TextField
-                      type="number"
-                      size="small"
-                      value={localQty}
-                      onChange={(e) =>
-                        handleQtyChange(item.cart_id, Number(e.target.value))
-                      }
-                      inputProps={{ min: 1 }}
-                      sx={{ width: '80px' }}
-                    />
-                  </CardContent>
+              {/* Store Items */}
+              <Grid container spacing={2}>
+                {store.items.map((item) => {
+                  const localQty =
+                    quantities[item.cart_id] !== undefined
+                      ? quantities[item.cart_id]
+                      : item.quantity;
+                  return (
+                    <Grid item xs={12} md={6} lg={4} key={item.cart_id}>
+                      <Card sx={{ height: '100%' }}>
+                        <CardContent>
+                          {item.item_image_path && (
+                            <div
+                              style={{
+                                width: '100%',
+                                height: '200px',
+                                position: 'relative',
+                              }}
+                            >
+                              <Image
+                                src={item.item_image_path}
+                                alt={item.item_name || 'Item Image'}
+                                layout="fill"
+                                objectFit="contain"
+                              />
+                            </div>
+                          )}
+                          <Typography variant="h6" gutterBottom>
+                            {item.item_name || 'Unknown Item'}
+                          </Typography>
+                          <Typography variant="body1" gutterBottom>
+                            Price: Rp. {item.item_price || 0}
+                          </Typography>
+                          <Typography variant="body2" gutterBottom>
+                            {item.item_description ||
+                              'No description available'}
+                          </Typography>
+                          <Typography variant="body2" gutterBottom>
+                            Category: {item.category_name || 'Uncategorized'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Quantity:
+                          </Typography>
+                          <TextField
+                            type="number"
+                            size="small"
+                            value={localQty}
+                            onChange={(e) =>
+                              handleQtyChange(
+                                item.cart_id,
+                                Number(e.target.value)
+                              )
+                            }
+                            inputProps={{ min: 1 }}
+                            sx={{ width: '80px' }}
+                          />
+                        </CardContent>
 
-                  <CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleUpdateQty(item.cart_id, localQty)}
-                    >
-                      Update Quantity
-                    </Button>
+                        <CardActions
+                          sx={{ justifyContent: 'space-between', px: 2 }}
+                        >
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() =>
+                              handleUpdateQty(item.cart_id, localQty)
+                            }
+                          >
+                            Update Quantity
+                          </Button>
 
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      onClick={() => handleRemoveItem(item.cart_id)}
-                    >
-                      Remove Item
-                    </Button>
-                  </CardActions>
-                </Card>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={() => handleRemoveItem(item.cart_id)}
+                          >
+                            Remove Item
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  );
+                })}
               </Grid>
-            );
-          })}
-        </Grid>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
