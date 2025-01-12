@@ -10,6 +10,8 @@ import axios from 'axios';
 import Image from 'next/image';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
 import FavoriteBorderOutlinedIcon from '@mui/icons-material/FavoriteBorderOutlined';
+import StoreMallDirectoryOutlinedIcon from '@mui/icons-material/StoreMallDirectoryOutlined';
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 const Navbar = () => {
 	const [profile, setProfile] = useState<userDTO>({});
 
@@ -54,8 +56,8 @@ const Navbar = () => {
 	}, []);
 
 	return (
-		<div className='p-4 bg-white flex justify-between items-center sticky top-0 z-10 shadow'>
-			<div className='flex flex-wrap w-[50%]'>
+		<div className='p-4 bg-white flex lg:md:flex-row flex-col-reverse justify-between items-center sticky top-0 z-10 shadow'>
+			<div className='flex flex-wrap lg:md:w-[50%] w-full'>
 				<div className='flex flex-wrap text-white p-1 bgr-primary mb-1 rounded'>Cari Barang Mu</div>
 				<FormControl
 					variant='outlined'
@@ -76,7 +78,33 @@ const Navbar = () => {
 					/>
 				</FormControl>
 			</div>
-			<div className='flex'>
+			<div className='flex justify-end'>
+				<Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+					<Tooltip title='Home'>
+						<IconButton
+							onClick={() => handleNavigation('/')}
+							size='small'
+							sx={{ ml: 0 }}
+							aria-haspopup='true'
+							className='btn-circle overflow-hidden txt-primary'
+							aria-expanded={open ? 'true' : undefined}>
+							<HomeOutlinedIcon />
+						</IconButton>
+					</Tooltip>
+				</Box>
+				<Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
+					<Tooltip title='Store'>
+						<IconButton
+							onClick={() => handleNavigation('/store')}
+							size='small'
+							sx={{ ml: 0 }}
+							aria-haspopup='true'
+							className='btn-circle overflow-hidden txt-primary'
+							aria-expanded={open ? 'true' : undefined}>
+							<StoreMallDirectoryOutlinedIcon />
+						</IconButton>
+					</Tooltip>
+				</Box>
 				<Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
 					<Tooltip title='Wishlist'>
 						<IconButton
@@ -170,12 +198,6 @@ const Navbar = () => {
 						</ListItemIcon>
 						{profile.fullName}
 					</MenuItem>
-					{/* <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                            <Settings fontSize="small" />
-                        </ListItemIcon>
-                        Settings
-                    </MenuItem> */}
 					<MenuItem onClick={handleLogout}>
 						<ListItemIcon>
 							<Logout fontSize='small' />
