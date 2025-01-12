@@ -4,7 +4,7 @@ import 'dotenv/config'
 const nextConfig = {
     reactStrictMode: true,
     images: {
-        domains: ['localhost'],
+        domains: ['ik.imagekit.io'],
     },
     env: {
         API_URL: process.env.API_URL,

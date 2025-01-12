@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Tron from './component/user/Tron';
-import CardItemStore from './component/CardItemStore';
 import Cookies from 'js-cookie';
-import { itemStore } from './DTO/itemStore';
 import defaultJpg from '@/public/default.webp';
+import { itemStore } from '../DTO/itemStore';
+import CardItemStore from '../component/CardItemStore';
+import { Typography } from '@mui/material';
 const Section = () => {
 	const [items, setItems] = useState<itemStore[]>([]);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -43,21 +43,29 @@ const Section = () => {
 
 	return (
 		<section>
-			<Tron />
+			<Typography
+				variant='h5'
+				fontWeight={600}>
+				Your Wish List ❤️
+			</Typography>
 			<div className='grid lg:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-4 mt-4'>
-				{items.map(item => (
-					<CardItemStore
-						key={item.id}
-						storeId={item.store.id}
-						storeName={item.store.name}
-						name={item.name}
-						address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
-						images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
-						price={item.price}
-						wishlist={item.wishlist}
-						itemId={item.id}
-					/>
-				))}
+				{items.map(item => {
+					if (item.wishlist) {
+						return (
+							<CardItemStore
+								key={item.id}
+								storeId={item.store.id}
+								storeName={item.store.name}
+								name={item.name}
+								address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
+								images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
+								price={item.price}
+								wishlist={item.wishlist}
+								itemId={item.id}
+							/>
+						);
+					}
+				})}
 			</div>
 		</section>
 	);
