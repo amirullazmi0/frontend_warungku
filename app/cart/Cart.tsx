@@ -36,12 +36,40 @@ interface StoreGroup {
   items: CartItem[];
 }
 
+interface PendingCartItem {
+  cart_id: string;
+  quantity: number;
+  item_id: string | null;
+  item_name: string | null;
+  item_price: number | null;
+  item_description: string | null;
+  item_image_paths: string[] | null;
+  category_name: string | null;
+}
+
+interface PendingStoreOrder {
+  store_id: string | null;
+  store_name: string | null;
+  store_email: string | null;
+  store_bio: string | null;
+  store_logo: string | null;
+  items: PendingCartItem[];
+  url_not_paid: string;
+  orderId: string;
+}
+
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
+
 export default function CartPage() {
   const router = useRouter();
   const [storeGroups, setStoreGroups] = useState<StoreGroup[]>([]);
+  const [pendingOrders, setPendingOrders] = useState<PendingStoreOrder[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-
   const API_URL = process.env.API_URL;
   const accessToken = Cookies.get('accessToken');
 
@@ -65,8 +93,27 @@ export default function CartPage() {
     }
   };
 
+  const fetchPendingOrders = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/api/cart/settled`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (response.data.success) {
+        setPendingOrders(response.data.data);
+      } else {
+        console.error('Failed to fetch pending orders:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching pending orders:', error);
+    }
+  };
+
   useEffect(() => {
     fetchCartItems();
+    fetchPendingOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRemoveItem = async (cartId: string) => {
@@ -111,11 +158,141 @@ export default function CartPage() {
     }));
   };
 
+  const handleCheckout = async () => {
+    try {
+      const payload = {
+        accessToken,
+        cartItems: storeGroups.map((store) => ({
+          store_id: store.store_id,
+          items: store.items,
+        })),
+      };
+      const response = await axios.post(`${API_URL}/api/payment`, payload, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      if (response.data.success) {
+        const snapToken = response.data.data.token;
+        window.snap.pay(snapToken, {
+          onSuccess: async function (result: any) {
+            try {
+              await axios.patch(
+                `${API_URL}/api/payment/update-status`,
+                { orderId: response.data.data.orderId },
+                {
+                  headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                  },
+                }
+              );
+              alert('Payment successful and status updated!');
+              router.push('/cart');
+            } catch (updateError) {
+              console.error('Error updating payment status:', updateError);
+              alert('Payment succeeded, but failed to update payment status.');
+            }
+          },
+          onPending: function (result: undefined) {
+            console.log('Payment pending:', result);
+            alert('Payment is pending.');
+          },
+          onError: function (result: undefined) {
+            console.error('Payment error:', result);
+            alert('Payment failed.');
+          },
+          onClose: function () {
+            console.log('User closed the popup without finishing the payment.');
+            alert('You closed the payment popup.');
+          },
+        });
+      } else {
+        alert('Failed to create transaction.');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      alert('Error occurred during checkout.');
+    }
+  };
+
+  const handlePayNotPaid = async (urlNotPaid: string, orderId: string) => {
+    if (typeof window !== 'undefined' && window.snap) {
+      window.snap.pay(urlNotPaid, {
+        onSuccess: async function (result: any) {
+          try {
+            await axios.patch(
+              `${API_URL}/api/payment/update-status`,
+              { orderId },
+              {
+                headers: {
+                  Authorization: `Bearer ${accessToken}`,
+                },
+              }
+            );
+            alert('Payment successful and status updated!');
+            router.push('/cart');
+          } catch (updateError) {
+            console.error('Error updating payment status:', updateError);
+            alert('Payment succeeded, but failed to update payment status.');
+          }
+        },
+        onPending: function (result: any) {
+          console.log('Payment pending:', result);
+          alert('Payment is pending.');
+        },
+        onError: function (result: any) {
+          console.error('Payment error:', result);
+          alert('Payment failed.');
+        },
+        onClose: function () {
+          console.log('User closed the popup without finishing the payment.');
+          alert('You closed the payment popup.');
+        },
+      });
+    } else {
+      alert('Midtrans Snap is not loaded yet. Please try again later.');
+    }
+  };
+
   return (
     <div style={{ padding: '1rem' }}>
       <Typography variant="h4" gutterBottom>
         Your Shopping Cart
       </Typography>
+
+      {pendingOrders.length > 0 && (
+        <div style={{ marginBottom: '1rem' }}>
+          <Typography variant="h5" gutterBottom>
+            Your Shopping Not Paid
+          </Typography>
+          {pendingOrders.map((store) => (
+            <div key={store.store_id || 'unknown-store'}>
+              <Typography variant="h6" gutterBottom>
+                {store.store_name || 'Unknown Store'}
+              </Typography>
+              {store.items.map((item) => (
+                <div key={item.cart_id} style={{ marginBottom: '0.5rem' }}>
+                  <Typography variant="body1">
+                    {item.item_name || 'Unnamed Item'} - {item.quantity} x Rp.{' '}
+                    {item.item_price || 0}
+                  </Typography>
+                </div>
+              ))}
+              {store.url_not_paid && store.orderId && (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={() =>
+                    handlePayNotPaid(store.url_not_paid, store.orderId)
+                  }
+                >
+                  Pay Now
+                </Button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
 
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
@@ -249,6 +426,11 @@ export default function CartPage() {
           ))}
         </div>
       )}
+      <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+        <Button variant="contained" color="primary" onClick={handleCheckout}>
+          Checkout
+        </Button>
+      </div>
     </div>
   );
 }
