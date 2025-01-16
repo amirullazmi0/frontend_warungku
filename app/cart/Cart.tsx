@@ -55,7 +55,8 @@ interface PendingStoreOrder {
   store_logo: string | null;
   items: PendingCartItem[];
   url_not_paid: string;
-  orderId: string;
+  token: string;
+  order_id: string;
 }
 
 declare global {
@@ -100,8 +101,8 @@ export default function CartPage() {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      if (response.data.success) {
-        setPendingOrders(response.data.data);
+      if (response.data) {
+        setPendingOrders(response.data);
       } else {
         console.error('Failed to fetch pending orders:', response.data);
       }
@@ -109,12 +110,6 @@ export default function CartPage() {
       console.error('Error fetching pending orders:', error);
     }
   };
-
-  useEffect(() => {
-    fetchCartItems();
-    fetchPendingOrders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleRemoveItem = async (cartId: string) => {
     try {
@@ -188,6 +183,7 @@ export default function CartPage() {
               );
               alert('Payment successful and status updated!');
               router.push('/cart');
+              router.refresh();
             } catch (updateError) {
               console.error('Error updating payment status:', updateError);
               alert('Payment succeeded, but failed to update payment status.');
@@ -215,9 +211,13 @@ export default function CartPage() {
     }
   };
 
-  const handlePayNotPaid = async (urlNotPaid: string, orderId: string) => {
+  const handlePayNotPaid = async (
+    urlNotPaid: string,
+    orderId: string,
+    token: string
+  ) => {
     if (typeof window !== 'undefined' && window.snap) {
-      window.snap.pay(urlNotPaid, {
+      window.snap.pay(token, {
         onSuccess: async function (result: any) {
           try {
             await axios.patch(
@@ -231,6 +231,7 @@ export default function CartPage() {
             );
             alert('Payment successful and status updated!');
             router.push('/cart');
+            router.refresh();
           } catch (updateError) {
             console.error('Error updating payment status:', updateError);
             alert('Payment succeeded, but failed to update payment status.');
@@ -254,46 +255,99 @@ export default function CartPage() {
     }
   };
 
+  useEffect(() => {
+    fetchCartItems();
+    fetchPendingOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div style={{ padding: '1rem' }}>
-      <Typography variant="h4" gutterBottom>
-        Your Shopping Cart
-      </Typography>
-
+      {/*  */}
       {pendingOrders.length > 0 && (
         <div style={{ marginBottom: '1rem' }}>
-          <Typography variant="h5" gutterBottom>
+          <Typography variant="h4" gutterBottom>
             Your Shopping Not Paid
           </Typography>
           {pendingOrders.map((store) => (
-            <div key={store.store_id || 'unknown-store'}>
-              <Typography variant="h6" gutterBottom>
-                {store.store_name || 'Unknown Store'}
-              </Typography>
-              {store.items.map((item) => (
-                <div key={item.cart_id} style={{ marginBottom: '0.5rem' }}>
-                  <Typography variant="body1">
-                    {item.item_name || 'Unnamed Item'} - {item.quantity} x Rp.{' '}
-                    {item.item_price || 0}
-                  </Typography>
-                </div>
-              ))}
-              {store.url_not_paid && store.orderId && (
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  onClick={() =>
-                    handlePayNotPaid(store.url_not_paid, store.orderId)
-                  }
-                >
-                  Pay Now
-                </Button>
-              )}
-            </div>
+            <Card
+              key={store.store_id || 'unknown-store'}
+              sx={{
+                mb: 2,
+                p: 1,
+                backgroundColor: '#f9f9f9',
+                mx: 'auto',
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" gutterBottom>
+                  {store.store_name || 'Unknown Store'}
+                </Typography>
+                <Grid container spacing={2}>
+                  {store.items.map((item) => (
+                    <Grid item xs={12} md={6} lg={4} key={item.cart_id}>
+                      <Card variant="outlined" sx={{ display: 'flex', mb: 1 }}>
+                        {item.item_image_paths &&
+                          item.item_image_paths.length > 0 && (
+                            <div
+                              style={{
+                                position: 'relative',
+                                width: '120px',
+                                height: '120px',
+                                marginRight: '1rem',
+                              }}
+                            >
+                              <Image
+                                src={item.item_image_paths[0]}
+                                alt={item.item_name || 'Item Image'}
+                                layout="fill"
+                                objectFit="contain"
+                              />
+                            </div>
+                          )}
+                        <CardContent sx={{ flex: '1 0 auto', p: 1 }}>
+                          <Typography variant="subtitle1">
+                            {item.item_name || 'Unnamed Item'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.quantity} x Rp. {item.item_price || 0}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {item.item_description || ''}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </CardContent>
+              <CardActions>
+                {store.url_not_paid && store.order_id && (
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() =>
+                      handlePayNotPaid(
+                        store.url_not_paid,
+                        store.order_id,
+                        store.token
+                      )
+                    }
+                  >
+                    Pay Now
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
           ))}
         </div>
       )}
+      {/*  */}
 
+      <Typography variant="h4" gutterBottom>
+        Your Shopping Cart
+      </Typography>
+      {/*  */}
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '2rem' }}>
           <CircularProgress />
@@ -316,7 +370,6 @@ export default function CartPage() {
               key={store.store_id || 'unknown-store'}
               style={{ marginBottom: '2rem' }}
             >
-              {/* Store Information */}
               <Typography variant="h5" gutterBottom>
                 {store.store_name || 'Unknown Store'}
               </Typography>
@@ -337,8 +390,6 @@ export default function CartPage() {
                   />
                 </div>
               )}
-
-              {/* Store Items */}
               <Grid container spacing={2}>
                 {store.items.map((item) => {
                   const localQty =
@@ -422,9 +473,12 @@ export default function CartPage() {
                   );
                 })}
               </Grid>
+              {/*  */}
             </div>
+            //
           ))}
         </div>
+        //
       )}
       <div style={{ marginTop: '2rem', textAlign: 'right' }}>
         <Button variant="contained" color="primary" onClick={handleCheckout}>
