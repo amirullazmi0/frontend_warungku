@@ -304,7 +304,7 @@ export default function CartPage() {
           <Button
             variant="contained"
             color="primary"
-            onClick={() => router.push('/browse')}
+            onClick={() => router.push('/')}
           >
             Browse Items
           </Button>
