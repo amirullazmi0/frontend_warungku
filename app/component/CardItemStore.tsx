@@ -9,6 +9,7 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { formatCurrency } from '../utils/formatCurrency';
+import { useFormContext } from 'react-hook-form';
 
 interface Props {
 	images: string | string[];
@@ -66,6 +67,7 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 			alert('Failed to add item to cart.');
 		}
 	};
+
 
 	return (
 		<button className='card bg-white shadow-xl relative'>
