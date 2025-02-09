@@ -22,4 +22,15 @@ export interface itemStore {
         kota: string;
         provinsi: string;
     };
+
+    categories: {
+        id: string,
+        name: string
+    }[]
 }
+
+export interface CategoryDTO {
+    id: string
+    name: string
+  }
+  
