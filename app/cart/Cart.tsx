@@ -174,7 +174,7 @@ export default function CartPage() {
             try {
               await axios.patch(
                 `${API_URL}/api/payment/update-status`,
-                { orderId: response.data.data.orderId },
+                { orderId: response.data.orderId },
                 {
                   headers: {
                     Authorization: `Bearer ${accessToken}`,
