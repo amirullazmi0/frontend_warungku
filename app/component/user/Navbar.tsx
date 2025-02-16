@@ -257,7 +257,7 @@ const Navbar = () => {
 					</Tooltip>
 				</Box>
 				<Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-					<Tooltip title='Keranjang Belanja'>
+					<Tooltip title='Cart'>
 						<IconButton
 							size='small'
 							sx={{ ml: 0 }}
