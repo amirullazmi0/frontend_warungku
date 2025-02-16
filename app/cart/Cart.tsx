@@ -279,6 +279,8 @@ export default function CartPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const hasCartItems = storeGroups.some((store) => store.items.length > 0);
+
   return (
     <div style={{ padding: '1rem' }}>
       {/*  */}
@@ -507,11 +509,13 @@ export default function CartPage() {
         </div>
         //
       )}
-      <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-        <Button variant="contained" color="primary" onClick={handleCheckout}>
-          Checkout
-        </Button>
-      </div>
+      {hasCartItems && (
+        <div style={{ marginTop: '2rem', textAlign: 'right' }}>
+          <Button variant="contained" color="primary" onClick={handleCheckout}>
+            Checkout
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
