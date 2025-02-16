@@ -40,7 +40,11 @@ const Section = () => {
 	}, []);
 
 	if (loading) {
-		return <div className='p-5'>Loading items...</div>;
+		return (
+			<section>
+				<div className='p-5'>Loading items...</div>;
+			</section>
+		);
 	}
 
 	return (

@@ -80,7 +80,11 @@ const Section = () => {
 	const otherItems = items.filter(item => !filteredItemIds.has(item.id));
 
 	if (loading) {
-		return <div className='p-5 text-center'>Loading items...</div>;
+		return (
+			<section>
+				<div className='p-5 text-center'>Loading items...</div>;
+			</section>
+		);
 	}
 
 	return (

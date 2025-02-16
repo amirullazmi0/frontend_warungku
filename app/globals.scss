@@ -3,14 +3,14 @@
 @tailwind utilities;
 
 :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-start-rgb: 214, 219, 220;
-    --background-end-rgb: 255, 255, 255;
-    --background-white: #ffffff;
-    --color-primary: #0a94ea;
-    --color-transparant: #00000047;
-    --color-page: #f6f6f6;
-    --color-dark: #131313;
+	--foreground-rgb: 0, 0, 0;
+	--background-start-rgb: 214, 219, 220;
+	--background-end-rgb: 255, 255, 255;
+	--background-white: #ffffff;
+	--color-primary: #0a94ea;
+	--color-transparant: #00000047;
+	--color-page: #f6f6f6;
+	--color-dark: #131313;
 }
 
 // @media (prefers-color-scheme: dark) {
@@ -24,77 +24,77 @@
 // }
 
 @font-face {
-    font-family: 'lemonmilk';
-    src: url('/font/lemonmilk.otf') format('woff2');
+	font-family: 'lemonmilk';
+	src: url('/font/lemonmilk.otf') format('woff2');
 }
 
 @font-face {
-    font-family: 'gonserat';
-    src: url('/font/gonserat.ttf') format('woff2');
+	font-family: 'gonserat';
+	src: url('/font/gonserat.ttf') format('woff2');
 }
 
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+	background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
+	background: #888;
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+	background: #555;
 }
 
-
 body {
-    background-color: var(--background-white);
-    color: var(--color-dark);
-    font-family: 'gonserat';
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f1f1f1;
+	background-color: var(--background-white);
+	color: var(--color-dark);
+	font-family: 'gonserat';
+	scrollbar-width: thin;
+	scrollbar-color: #888 #f1f1f1;
 }
 
 @layer utilities {
-    .text-balance {
-        text-wrap: balance;
-    }
+	.text-balance {
+		text-wrap: balance;
+	}
 }
 
 section {
-    padding: 20px;
+	padding: 20px;
+	min-height: 650px;
 }
 
 .bgr-primary {
-    background-color: var(--color-primary);
+	background-color: var(--color-primary);
 }
 
 .bgr-transparant {
-    background-color: var(--color-transparant);
+	background-color: var(--color-transparant);
 }
 
 .bgr-page {
-    background-color: var(--color-page);
+	background-color: var(--color-page);
 }
 
 .txt-primary {
-    color: var(--color-primary)
+	color: var(--color-primary);
 }
 
 .txt-dark {
-    color: var(--color-dark)
+	color: var(--color-dark);
 }
 
 .button {
-    transition: ease-in-out 0.5s;
+	transition: ease-in-out 0.5s;
 
-    :active {
-        transition: ease 0.5s;
-        transform: scale(90%);
-    }
+	:active {
+		transition: ease 0.5s;
+		transform: scale(90%);
+	}
 }

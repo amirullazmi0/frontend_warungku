@@ -53,6 +53,7 @@ body {
 }
 section {
   padding: 20px;
+  min-height: 650px;
 }
 
 .bgr-primary {
