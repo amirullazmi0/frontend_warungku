@@ -255,6 +255,24 @@ export default function CartPage() {
     }
   };
 
+  const handleCancelOrder = async (orderId: string) => {
+    try {
+      const response = await axios.post(`${API_URL}/api/cart/cancel-order`, {
+        accessToken,
+        orderId,
+      });
+      if (response.data.success) {
+        alert(response.data.message);
+        fetchPendingOrders();
+      } else {
+        alert('Failed to cancel order');
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      alert('Failed to cancel order.');
+    }
+  };
+
   useEffect(() => {
     fetchCartItems();
     fetchPendingOrders();
@@ -323,19 +341,28 @@ export default function CartPage() {
               </CardContent>
               <CardActions>
                 {store.url_not_paid && store.order_id && (
-                  <Button
-                    variant="contained"
-                    color="secondary"
-                    onClick={() =>
-                      handlePayNotPaid(
-                        store.url_not_paid,
-                        store.order_id,
-                        store.token
-                      )
-                    }
-                  >
-                    Pay Now
-                  </Button>
+                  <>
+                    <Button
+                      variant="contained"
+                      color="secondary"
+                      onClick={() =>
+                        handlePayNotPaid(
+                          store.url_not_paid,
+                          store.order_id,
+                          store.token
+                        )
+                      }
+                    >
+                      Pay Now
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      onClick={() => handleCancelOrder(store.order_id)}
+                    >
+                      Cancel Order
+                    </Button>
+                  </>
                 )}
               </CardActions>
             </Card>
