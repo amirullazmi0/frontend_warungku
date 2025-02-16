@@ -79,7 +79,6 @@ const TransactionsSection: React.FC = () => {
                 <TableCell>Invoice Number</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Total</TableCell>
-                <TableCell>Customer</TableCell>
                 <TableCell>Address</TableCell>
                 <TableCell>Status</TableCell>
                 <TableCell>View Items</TableCell>
@@ -93,7 +92,6 @@ const TransactionsSection: React.FC = () => {
                     {new Date(tx.createdAt).toLocaleString()}
                   </TableCell>
                   <TableCell>{tx.total}</TableCell>
-                  <TableCell>{tx.customer_fullName}</TableCell>
                   <TableCell>
                     {tx.customer_address} {tx.customer_city}
                   </TableCell>
