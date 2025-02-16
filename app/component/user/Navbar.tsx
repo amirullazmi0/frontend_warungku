@@ -4,7 +4,7 @@ import { Avatar, Box, Button, Checkbox, Divider, FormControl, FormControlLabel, 
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import Cookies from 'js-cookie';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { userDTO } from '@/model/user.model';
 import axios from 'axios';
 import LocalGroceryStoreOutlinedIcon from '@mui/icons-material/LocalGroceryStoreOutlined';
@@ -14,10 +14,14 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import { CategoryDTO } from '@/app/DTO/itemStore';
 import { GlobalsAxiosResponse } from '@/app/DTO/GLobals';
 import { FormNavContext } from '../context/FormNavContext';
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 const Navbar = () => {
+	const router = useRouter();
+
+	const pathname = usePathname();
+
 	const [profile, setProfile] = useState<userDTO>({});
 	const [keyword, setKeyword] = useState<string | null>(null);
-	const router = useRouter();
 	const API_URL = process.env.API_URL;
 	const accessToken = Cookies.get('accessToken');
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -102,52 +106,66 @@ const Navbar = () => {
 
 	useEffect(() => {
 		getProfile();
-		getCategrory();
+		if (pathname === '/') {
+			getCategrory();
+		}
 	}, []);
-
 	return (
 		<div className='p-4 bg-white flex lg:md:flex-row flex-col-reverse justify-between items-center sticky top-0 z-10 shadow'>
 			<div className='flex flex-col lg:md:w-[30%] w-full'>
-				<div className='flex flex-wrap text-white p-1 bgr-primary mb-1 rounded w-fit'>Cari Barang Mu</div>
-				<div className='flex flex-row items-center space-x-2 w-full'>
-					<FormControl variant='outlined'>
-						<OutlinedInput
-							id='outlined-adornment-weight'
-							sx={{ height: '40px', flexGrow: 1 }}
-							onChange={e => setKeyword(e.target.value)}
-							placeholder='Cari di WarungKu'
-							endAdornment={
-								<InputAdornment position='end'>
-									<SearchIcon />
-								</InputAdornment>
-							}
-							aria-describedby='outlined-weight-helper-text'
-							inputProps={{
-								'aria-label': 'search',
-							}}
-						/>
-					</FormControl>
-					<Button
-						className='w-fit'
-						onClick={handleKeyword}
-						disableElevation
-						variant='contained'>
-						Cari
-					</Button>
-					<Button
-						variant='contained'
-						disableElevation
-						color='inherit'
-						className='flex gap-4 w-fit'
-						onClick={() => {
-							// formNavContex?.setKeyword('');
-							modalRef.current?.showModal();
-						}} // ✅ Directly calls showModal()
-					>
-						Filter
-						<Tune />
-					</Button>
-				</div>
+				{pathname === '/' ? (
+					<>
+						<div className='flex flex-wrap text-white p-1 bgr-primary mb-1 rounded w-fit'>Cari Barang Mu</div>
+						<div className='flex flex-row items-center space-x-2 w-full'>
+							<FormControl variant='outlined'>
+								<OutlinedInput
+									id='outlined-adornment-weight'
+									sx={{ height: '40px', flexGrow: 1 }}
+									onChange={e => setKeyword(e.target.value)}
+									placeholder='Cari di WarungKu'
+									endAdornment={
+										<InputAdornment position='end'>
+											<SearchIcon />
+										</InputAdornment>
+									}
+									aria-describedby='outlined-weight-helper-text'
+									inputProps={{
+										'aria-label': 'search',
+									}}
+								/>
+							</FormControl>
+							<Button
+								className='w-fit'
+								onClick={handleKeyword}
+								disableElevation
+								variant='contained'>
+								Cari
+							</Button>
+							<Button
+								variant='contained'
+								disableElevation
+								color='inherit'
+								className='flex gap-4 w-fit'
+								onClick={() => {
+									// formNavContex?.setKeyword('');
+									modalRef.current?.showModal();
+								}} // ✅ Directly calls showModal()
+							>
+								Filter
+								<Tune />
+							</Button>
+						</div>
+					</>
+				) : (
+					<>
+						<Button
+							onClick={() => router.push('/')}
+							className='flex flex-wrap text-white p-4 bgr-primary mb-1 rounded w-fit'
+							sx={{}}>
+							<ShoppingBagIcon fontSize='large' />
+						</Button>
+					</>
+				)}
 			</div>
 			{/* Open the modal using document.getElementById('ID').showModal() method */}
 
