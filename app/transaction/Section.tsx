@@ -76,7 +76,7 @@ const TransactionsSection: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Invoice Number</TableCell>
+                <TableCell>Order Number</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Total</TableCell>
                 <TableCell>Address</TableCell>
@@ -89,7 +89,7 @@ const TransactionsSection: React.FC = () => {
                 <TableRow key={tx.transaction_id}>
                   <TableCell>{tx.invoice?.invoiceNumber || 'N/A'}</TableCell>
                   <TableCell>
-                    {new Date(tx.createdAt).toLocaleString()}
+                    {new Date(tx.createdat).toLocaleString()}
                   </TableCell>
                   <TableCell>{tx.total}</TableCell>
                   <TableCell>
@@ -99,7 +99,7 @@ const TransactionsSection: React.FC = () => {
                   <TableCell>
                     <Button
                       variant="outlined"
-                      onClick={() => handleViewItems(tx.items || [])}
+                      onClick={() => handleViewItems(tx.invoice.items || [])}
                     >
                       View Items
                     </Button>
