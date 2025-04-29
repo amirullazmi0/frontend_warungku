@@ -2,7 +2,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import { Box, Typography, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import {
+	Box,
+	Typography,
+	CircularProgress,
+	Paper,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Button,
+	Dialog,
+	DialogTitle,
+	DialogContent,
+	DialogActions,
+	Stack,
+} from '@mui/material';
 import { statusPayment } from './transaction';
 import StatusChip from './StatusChip';
 import { formatCurrency } from '../utils/formatCurrency';
@@ -53,113 +70,125 @@ const TransactionsSection: React.FC = () => {
 
 	return (
 		<section>
-			<Typography
-				variant='h4'
-				gutterBottom>
-				Your Transactions
-			</Typography>
-			{loading ? (
-				<CircularProgress />
-			) : transactions.length > 0 ? (
-				<TableContainer component={Paper}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell>Order Number</TableCell>
-								<TableCell>Date</TableCell>
-								<TableCell>Total</TableCell>
-								<TableCell>Address</TableCell>
-								<TableCell>Status</TableCell>
-								<TableCell>View Items</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{transactions.map(tx => {
-								const status: statusPayment = tx.invoice?.status;
-								return (
-									<TableRow key={tx.transaction_id}>
-										<TableCell>{tx.invoice?.invoiceNumber || 'N/A'}</TableCell>
-										<TableCell>{new Date(tx.createdat).toLocaleString()}</TableCell>
-										<TableCell>{formatCurrency(tx.total)}</TableCell>
-										<TableCell>
-											{tx.customer_address} {tx.customer_city}
-										</TableCell>
-										<TableCell>
-											<StatusChip status={status} />
-										</TableCell>
-										<TableCell>
-											<Button
-												variant='outlined'
-												onClick={() => handleViewItems(tx.invoice.items || [])}>
-												View Items
-											</Button>
-										</TableCell>
-									</TableRow>
-								);
-							})}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (
-				<Typography>No transactions found.</Typography>
-			)}
-
-			{/* Dialog to show item details */}
-			<Dialog
-				open={openDialog}
-				onClose={handleCloseDialog}
-				maxWidth='md'
-				fullWidth>
-				<DialogTitle>Transaction Items</DialogTitle>
-				<DialogContent dividers>
-					{selectedItems.length === 0 ? (
-						<Typography>No items available.</Typography>
-					) : (
+			<Stack
+				justifyContent='center'
+				alignItems='center'>
+				<Stack
+					sx={{
+						width: {
+							xs: '100%',
+							md: '80%',
+						},
+					}}>
+					<Typography
+						variant='h4'
+						gutterBottom>
+						Your Transactions
+					</Typography>
+					{loading ? (
+						<CircularProgress />
+					) : transactions.length > 0 ? (
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
 									<TableRow>
-										<TableCell>Image</TableCell>
-										<TableCell>Item Name</TableCell>
-										<TableCell>Quantity</TableCell>
-										<TableCell>Price</TableCell>
-										<TableCell>Description</TableCell>
+										<TableCell>No</TableCell>
+										<TableCell>Order Number</TableCell>
+										<TableCell>Date</TableCell>
+										<TableCell>Total</TableCell>
+										<TableCell>Status</TableCell>
+										<TableCell>View Items</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{selectedItems.map((item, idx) => (
-										<TableRow key={idx}>
-											<TableCell>
-												<img
-													src={item.images}
-													alt={item.itemName}
-													style={{
-														width: '80px',
-														height: '80px',
-														objectFit: 'cover',
-													}}
-												/>
-											</TableCell>
-											<TableCell>{item.itemName}</TableCell>
-											<TableCell>{item.qty}</TableCell>
-											<TableCell>{formatCurrency(item.price)}</TableCell>
-											<TableCell>{item.desc}</TableCell>
-										</TableRow>
-									))}
+									{transactions.map((tx, index) => {
+										const status: statusPayment = tx.invoice?.status;
+										console.log(tx);
+
+										return (
+											<TableRow key={tx.transaction_id}>
+												<TableCell>{index + 1}</TableCell>
+												<TableCell>{tx.invoice?.invoiceNumber || 'N/A'}</TableCell>
+												<TableCell>{new Date(tx.createdat).toLocaleString()}</TableCell>
+												<TableCell>{formatCurrency(tx.total)}</TableCell>
+												<TableCell>
+													<StatusChip status={status} />
+												</TableCell>
+												<TableCell>
+													<Button
+														variant='outlined'
+														onClick={() => handleViewItems(tx.invoice.items || [])}>
+														View Items
+													</Button>
+												</TableCell>
+											</TableRow>
+										);
+									})}
 								</TableBody>
 							</Table>
 						</TableContainer>
+					) : (
+						<Typography>No transactions found.</Typography>
 					)}
-				</DialogContent>
-				<DialogActions>
-					<Button
-						onClick={handleCloseDialog}
-						variant='contained'
-						color='primary'>
-						Close
-					</Button>
-				</DialogActions>
-			</Dialog>
+
+					{/* Dialog to show item details */}
+					<Dialog
+						open={openDialog}
+						onClose={handleCloseDialog}
+						maxWidth='md'
+						fullWidth>
+						<DialogTitle>Transaction Items</DialogTitle>
+						<DialogContent dividers>
+							{selectedItems.length === 0 ? (
+								<Typography>No items available.</Typography>
+							) : (
+								<TableContainer component={Paper}>
+									<Table>
+										<TableHead>
+											<TableRow>
+												<TableCell>Image</TableCell>
+												<TableCell>Item Name</TableCell>
+												<TableCell>Quantity</TableCell>
+												<TableCell>Price</TableCell>
+												<TableCell>Description</TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{selectedItems.map((item, idx) => (
+												<TableRow key={idx}>
+													<TableCell>
+														<img
+															src={item.images}
+															alt={item.itemName}
+															style={{
+																width: '80px',
+																height: '80px',
+																objectFit: 'cover',
+															}}
+														/>
+													</TableCell>
+													<TableCell>{item.itemName}</TableCell>
+													<TableCell>{item.qty}</TableCell>
+													<TableCell>{formatCurrency(item.price)}</TableCell>
+													<TableCell>{item.desc}</TableCell>
+												</TableRow>
+											))}
+										</TableBody>
+									</Table>
+								</TableContainer>
+							)}
+						</DialogContent>
+						<DialogActions>
+							<Button
+								onClick={handleCloseDialog}
+								variant='contained'
+								color='primary'>
+								Close
+							</Button>
+						</DialogActions>
+					</Dialog>
+				</Stack>
+			</Stack>
 		</section>
 	);
 };
