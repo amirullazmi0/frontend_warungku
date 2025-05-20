@@ -4,7 +4,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 
-import { Card, CardActions, CardContent, Typography, Button, Grid, TextField, CircularProgress } from '@mui/material';
+import { Card, CardActions, CardContent, Typography, Button, Grid, TextField, CircularProgress, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody } from '@mui/material';
 import Image from 'next/image';
 
 interface CartItem {
@@ -144,15 +144,24 @@ export default function CartPage() {
 		}));
 	};
 
-	const handleCheckout = async () => {
+	const handleCheckout = async (storeid: string) => {
 		try {
+			const filteredStores = storeGroups.filter(store => store.store_id === storeid);
+
+			if (filteredStores.length === 0) {
+				alert('Store not found in cart.');
+				setLoading(false);
+				return;
+			}
+
 			const payload = {
 				accessToken,
-				cartItems: storeGroups.map(store => ({
+				cartItems: filteredStores.map(store => ({
 					store_id: store.store_id,
 					items: store.items,
 				})),
 			};
+
 			const response = await axios.post(`${API_URL}/api/payment`, payload, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
@@ -174,23 +183,31 @@ export default function CartPage() {
 							);
 							alert('Payment successful and status updated!');
 							fetchCartItems();
+							fetchPendingOrders();
 							router.push('/cart');
 							router.refresh();
 						} catch (updateError) {
+							fetchCartItems();
 							console.error('Error updating payment status:', updateError);
 							alert('Payment succeeded, but failed to update payment status.');
 						}
 					},
 					onPending: function (result: undefined) {
 						console.log('Payment pending:', result);
+						fetchCartItems();
+						fetchPendingOrders();
 						alert('Payment is pending.');
 					},
 					onError: function (result: undefined) {
 						console.error('Payment error:', result);
+						fetchCartItems();
+						fetchPendingOrders();
 						alert('Payment failed.');
 					},
 					onClose: function () {
 						console.log('User closed the popup without finishing the payment.');
+						fetchCartItems();
+						fetchPendingOrders();
 						alert('You closed the payment popup.');
 					},
 				});
@@ -397,122 +414,88 @@ export default function CartPage() {
 								gutterBottom>
 								{store.store_name || 'Unknown Store'}
 							</Typography>
-							{store.store_logo && (
-								<div
-									style={{
-										width: '100px',
-										height: '100px',
-										position: 'relative',
-										marginBottom: '1rem',
-									}}>
-									<Image
-										src={store.store_logo}
-										alt={store.store_name || 'Store Logo'}
-										layout='fill'
-										objectFit='contain'
-									/>
+
+							<TableContainer component={Paper}>
+								<Table aria-label='store items table'>
+									<TableHead>
+										<TableRow>
+											<TableCell>Image</TableCell>
+											<TableCell>Item Name</TableCell>
+											<TableCell>Description</TableCell>
+											<TableCell>Category</TableCell>
+											<TableCell>Price (Rp.)</TableCell>
+											<TableCell>Quantity</TableCell>
+											<TableCell align='center'>Actions</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										{store.items.map(item => {
+											const localQty = quantities[item.cart_id] !== undefined ? quantities[item.cart_id] : item.quantity;
+											return (
+												<TableRow key={item.cart_id}>
+													<TableCell>
+														{item.item_image_paths && item.item_image_paths.length > 0 && (
+															<div style={{ width: 60, height: 60, position: 'relative' }}>
+																<Image
+																	src={item.item_image_paths[0]}
+																	alt={item.item_name || 'Item Image'}
+																	layout='fill'
+																	objectFit='contain'
+																/>
+															</div>
+														)}
+													</TableCell>
+													<TableCell>{item.item_name || 'Unknown Item'}</TableCell>
+													<TableCell>{item.item_description || 'No description available'}</TableCell>
+													<TableCell>{item.category_name || 'Uncategorized'}</TableCell>
+													<TableCell>{item.item_price || 0}</TableCell>
+													<TableCell>
+														<TextField
+															type='number'
+															size='small'
+															value={localQty}
+															onChange={e => handleQtyChange(item.cart_id, Number(e.target.value))}
+															inputProps={{ min: 1 }}
+															sx={{ width: '80px' }}
+														/>
+													</TableCell>
+													<TableCell align='center'>
+														<Button
+															variant='contained'
+															color='primary'
+															size='small'
+															onClick={() => handleUpdateQty(item.cart_id, localQty)}
+															sx={{ mr: 1 }}>
+															Update
+														</Button>
+														<Button
+															variant='outlined'
+															color='error'
+															size='small'
+															onClick={() => handleRemoveItem(item.cart_id)}>
+															Remove
+														</Button>
+													</TableCell>
+												</TableRow>
+											);
+										})}
+									</TableBody>
+								</Table>
+							</TableContainer>
+							{hasCartItems && (
+								<div style={{ marginTop: '2rem', textAlign: 'right' }}>
+									<Button
+										variant='contained'
+										color='primary'
+										onClick={() => handleCheckout(store.store_id || '')}>
+										Checkout
+									</Button>
 								</div>
 							)}
-							<Grid
-								container
-								spacing={2}>
-								{store.items.map(item => {
-									const localQty = quantities[item.cart_id] !== undefined ? quantities[item.cart_id] : item.quantity;
-									return (
-										<Grid
-											item
-											xs={12}
-											md={6}
-											lg={4}
-											key={item.cart_id}>
-											<Card sx={{ height: '100%' }}>
-												<CardContent>
-													{item.item_image_paths && (
-														<div
-															style={{
-																width: '100%',
-																height: '200px',
-																position: 'relative',
-															}}>
-															<Image
-																src={item.item_image_paths[0]}
-																alt={item.item_name || 'Item Image'}
-																layout='fill'
-																objectFit='contain'
-															/>
-														</div>
-													)}
-													<Typography
-														variant='h6'
-														gutterBottom>
-														{item.item_name || 'Unknown Item'}
-													</Typography>
-													<Typography
-														variant='body1'
-														gutterBottom>
-														Price: Rp. {item.item_price || 0}
-													</Typography>
-													<Typography
-														variant='body2'
-														gutterBottom>
-														{item.item_description || 'No description available'}
-													</Typography>
-													<Typography
-														variant='body2'
-														gutterBottom>
-														Category: {item.category_name || 'Uncategorized'}
-													</Typography>
-													<Typography
-														variant='body2'
-														color='text.secondary'>
-														Quantity:
-													</Typography>
-													<TextField
-														type='number'
-														size='small'
-														value={localQty}
-														onChange={e => handleQtyChange(item.cart_id, Number(e.target.value))}
-														inputProps={{ min: 1 }}
-														sx={{ width: '80px' }}
-													/>
-												</CardContent>
-
-												<CardActions sx={{ justifyContent: 'space-between', px: 2 }}>
-													<Button
-														variant='contained'
-														color='primary'
-														onClick={() => handleUpdateQty(item.cart_id, localQty)}>
-														Update Quantity
-													</Button>
-
-													<Button
-														variant='outlined'
-														color='error'
-														onClick={() => handleRemoveItem(item.cart_id)}>
-														Remove Item
-													</Button>
-												</CardActions>
-											</Card>
-										</Grid>
-									);
-								})}
-							</Grid>
-							{/*  */}
 						</div>
-						//
 					))}
 				</div>
 				//
-			)}
-			{hasCartItems && (
-				<div style={{ marginTop: '2rem', textAlign: 'right' }}>
-					<Button
-						variant='contained'
-						color='primary'
-						onClick={handleCheckout}>
-						Checkout
-					</Button>
-				</div>
 			)}
 		</div>
 	);
