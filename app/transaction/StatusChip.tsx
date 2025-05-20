@@ -9,14 +9,9 @@ interface props {
 const StatusChip: React.FC<props> = ({ status }) => {
 	return (
 		<Box
-			className={`py-2 px-4 rounded-md w-fit font-bold border-2 ${
-				status == 'SETTLEMENT' || status === 'PAID'
-					? 'bg-lime-300 text-lime-700 border-lime-700'
-					: status === 'UNPAID'
-					? 'bg-yellow-300 text-yellow-700 border-yellow-700'
-					: 'bg-rose-300 text-rose-700  border-rose-700'
+			className={`py-2 px-4 rounded-md w-fit font-bold ${status == 'SETTLEMENT' ? 'text-warning' : status === 'UNPAID' ? 'text-error' : status === 'PAID' ? 'text-success' : 'text-error'}
 			}`}>
-			{status}
+			{status == 'SETTLEMENT' ? 'Belum Dibayar' : status === 'UNPAID' ? 'Belum Dibayar' : status === 'PAID' ? 'Lunas' : 'Dibatalkan'}
 		</Box>
 	);
 };

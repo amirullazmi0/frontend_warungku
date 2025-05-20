@@ -46,7 +46,7 @@ const Section = () => {
 			<Typography
 				variant='h5'
 				fontWeight={600}>
-				Your Wish List ❤️
+				Wishlist Kamu ❤️
 			</Typography>
 			<div className='grid lg:grid-cols-6 md:grid-cols-4 grid-cols-2 gap-4 mt-4'>
 				{items.map(item => {

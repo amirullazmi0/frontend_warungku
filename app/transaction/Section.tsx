@@ -83,7 +83,7 @@ const TransactionsSection: React.FC = () => {
 					<Typography
 						variant='h4'
 						gutterBottom>
-						Your Transactions
+						Daftar Transaksi
 					</Typography>
 					{loading ? (
 						<CircularProgress />
@@ -93,11 +93,11 @@ const TransactionsSection: React.FC = () => {
 								<TableHead>
 									<TableRow>
 										<TableCell>No</TableCell>
-										<TableCell>Order Number</TableCell>
-										<TableCell>Date</TableCell>
+										<TableCell>Invoice</TableCell>
+										<TableCell>tanggal</TableCell>
 										<TableCell>Total</TableCell>
 										<TableCell>Status</TableCell>
-										<TableCell>View Items</TableCell>
+										<TableCell>Lihat Item</TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -118,7 +118,7 @@ const TransactionsSection: React.FC = () => {
 													<Button
 														variant='outlined'
 														onClick={() => handleViewItems(tx.invoice.items || [])}>
-														View Items
+														Lihat Item
 													</Button>
 												</TableCell>
 											</TableRow>
@@ -128,7 +128,7 @@ const TransactionsSection: React.FC = () => {
 							</Table>
 						</TableContainer>
 					) : (
-						<Typography>No transactions found.</Typography>
+						<Typography>Tidak ada transaksi</Typography>
 					)}
 
 					{/* Dialog to show item details */}
@@ -140,17 +140,16 @@ const TransactionsSection: React.FC = () => {
 						<DialogTitle>Transaction Items</DialogTitle>
 						<DialogContent dividers>
 							{selectedItems.length === 0 ? (
-								<Typography>No items available.</Typography>
+								<Typography>Tidak ada item yang ditemukan.</Typography>
 							) : (
 								<TableContainer component={Paper}>
 									<Table>
 										<TableHead>
 											<TableRow>
-												<TableCell>Image</TableCell>
-												<TableCell>Item Name</TableCell>
-												<TableCell>Quantity</TableCell>
-												<TableCell>Price</TableCell>
-												<TableCell>Description</TableCell>
+												<TableCell>Gambar</TableCell>
+												<TableCell>Nama</TableCell>
+												<TableCell>Jumlah</TableCell>
+												<TableCell>Harga</TableCell>
 											</TableRow>
 										</TableHead>
 										<TableBody>
@@ -170,9 +169,19 @@ const TransactionsSection: React.FC = () => {
 													<TableCell>{item.itemName}</TableCell>
 													<TableCell>{item.qty}</TableCell>
 													<TableCell>{formatCurrency(item.price)}</TableCell>
-													<TableCell>{item.desc}</TableCell>
 												</TableRow>
 											))}
+
+											<TableRow>
+												<TableCell
+													colSpan={3}
+													align='right'>
+													<strong>Total:</strong>
+												</TableCell>
+												<TableCell>
+													<strong>{formatCurrency(selectedItems.reduce((acc, item) => acc + item.price * item.qty, 0))}</strong>
+												</TableCell>
+											</TableRow>
 										</TableBody>
 									</Table>
 								</TableContainer>
@@ -183,7 +192,7 @@ const TransactionsSection: React.FC = () => {
 								onClick={handleCloseDialog}
 								variant='contained'
 								color='primary'>
-								Close
+								Keluar
 							</Button>
 						</DialogActions>
 					</Dialog>

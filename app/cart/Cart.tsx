@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import { Card, CardActions, CardContent, Typography, Button, Grid, TextField, CircularProgress, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody } from '@mui/material';
 import Image from 'next/image';
+import shopPng from '@/public/shopPng.png';
 
 interface CartItem {
 	cart_id: string;
@@ -288,14 +289,14 @@ export default function CartPage() {
 	const hasCartItems = storeGroups.some(store => store.items.length > 0);
 
 	return (
-		<div style={{ padding: '1rem' }}>
+		<div style={{ padding: '1rem', minHeight: '100vh' }}>
 			{/*  */}
 			{pendingOrders.length > 0 && (
 				<div style={{ marginBottom: '1rem' }}>
 					<Typography
 						variant='h4'
 						gutterBottom>
-						Your Shopping Not Paid
+						Yuk Bayar Pesanan Kamu
 					</Typography>
 					{pendingOrders.map(store => (
 						<Card
@@ -366,13 +367,13 @@ export default function CartPage() {
 											variant='contained'
 											color='secondary'
 											onClick={() => handlePayNotPaid(store.url_not_paid, store.order_id, store.token)}>
-											Pay Now
+											Bayar Sekarang
 										</Button>
 										<Button
 											variant='outlined'
 											color='error'
 											onClick={() => handleCancelOrder(store.order_id)}>
-											Cancel Order
+											Batalkan Pesanan
 										</Button>
 									</>
 								)}
@@ -386,7 +387,7 @@ export default function CartPage() {
 			<Typography
 				variant='h4'
 				gutterBottom>
-				Your Shopping Cart
+				{hasCartItems ? 'Keranjang Belanja' : 'Keranjang Kosong'}
 			</Typography>
 			{/*  */}
 			{loading ? (
@@ -394,13 +395,19 @@ export default function CartPage() {
 					<CircularProgress />
 				</div>
 			) : storeGroups.length === 0 ? (
-				<div style={{ textAlign: 'center', marginTop: '2rem' }}>
-					<Typography>No items in your cart.</Typography>
+				<div style={{ textAlign: 'center', marginTop: '2rem', justifyContent: 'center' }}>
+					<Image
+						src={shopPng}
+						alt='Empty Cart'
+						width={200}
+						height={200}
+						style={{ margin: '1rem auto' }}
+					/>
 					<Button
 						variant='contained'
 						color='primary'
 						onClick={() => router.push('/')}>
-						Browse Items
+						Belanja Sekarang
 					</Button>
 				</div>
 			) : (
@@ -419,13 +426,13 @@ export default function CartPage() {
 								<Table aria-label='store items table'>
 									<TableHead>
 										<TableRow>
-											<TableCell>Image</TableCell>
-											<TableCell>Item Name</TableCell>
-											<TableCell>Description</TableCell>
-											<TableCell>Category</TableCell>
-											<TableCell>Price (Rp.)</TableCell>
-											<TableCell>Quantity</TableCell>
-											<TableCell align='center'>Actions</TableCell>
+											<TableCell>Gambar</TableCell>
+											<TableCell>Barang</TableCell>
+											<TableCell>Keterangan</TableCell>
+											<TableCell>Kategori</TableCell>
+											<TableCell>Harga (Rp.)</TableCell>
+											<TableCell>Jumlah</TableCell>
+											<TableCell align='center'></TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
@@ -466,14 +473,14 @@ export default function CartPage() {
 															size='small'
 															onClick={() => handleUpdateQty(item.cart_id, localQty)}
 															sx={{ mr: 1 }}>
-															Update
+															Perbarui
 														</Button>
 														<Button
 															variant='outlined'
 															color='error'
 															size='small'
 															onClick={() => handleRemoveItem(item.cart_id)}>
-															Remove
+															Hapus
 														</Button>
 													</TableCell>
 												</TableRow>
@@ -488,7 +495,7 @@ export default function CartPage() {
 										variant='contained'
 										color='primary'
 										onClick={() => handleCheckout(store.store_id || '')}>
-										Checkout
+										Lanjutkan Pembayaran
 									</Button>
 								</div>
 							)}
