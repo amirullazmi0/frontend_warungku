@@ -4,9 +4,29 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 
-import { Card, CardActions, CardContent, Typography, Button, Grid, TextField, CircularProgress, TableContainer, Paper, Table, TableHead, TableCell, TableRow, TableBody } from '@mui/material';
+import {
+	Card,
+	CardActions,
+	CardContent,
+	Typography,
+	Button,
+	Grid,
+	TextField,
+	CircularProgress,
+	TableContainer,
+	Paper,
+	Table,
+	TableHead,
+	TableCell,
+	TableRow,
+	TableBody,
+	Stack,
+	IconButton,
+} from '@mui/material';
 import Image from 'next/image';
 import shopPng from '@/public/shopPng.png';
+import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { formatNumber } from '../utils/formatNumber';
 
 interface CartItem {
 	cart_id: string;
@@ -289,221 +309,242 @@ export default function CartPage() {
 	const hasCartItems = storeGroups.some(store => store.items.length > 0);
 
 	return (
-		<div style={{ padding: '1rem', minHeight: '100vh' }}>
+		<Stack
+			sx={{ padding: '1rem', minHeight: '100vh' }}
+			alignItems='center'>
 			{/*  */}
-			{pendingOrders.length > 0 && (
-				<div style={{ marginBottom: '1rem' }}>
-					<Typography
-						variant='h4'
-						gutterBottom>
-						Yuk Bayar Pesanan Kamu
-					</Typography>
-					{pendingOrders.map(store => (
-						<Card
-							key={store.store_id || 'unknown-store'}
-							sx={{
-								mb: 2,
-								p: 1,
-								backgroundColor: '#f9f9f9',
-								mx: 'auto',
-							}}>
-							<CardContent>
+			<Stack
+				sx={{
+					minWidth: {
+						xs: '100%',
+						md: '60rem',
+					},
+					maxWidth: {
+						xs: '100%',
+						md: '70rem',
+					},
+				}}>
+				{pendingOrders.length > 0 && (
+					<div style={{ marginBottom: '1rem' }}>
+						<Typography
+							variant='h4'
+							gutterBottom>
+							Yuk Bayar Pesanan Kamu
+						</Typography>
+						{pendingOrders.map(store => (
+							<Card
+								key={store.store_id || 'unknown-store'}
+								sx={{
+									mb: 2,
+									p: 1,
+									backgroundColor: '#f9f9f9',
+									mx: 'auto',
+								}}>
+								<CardContent>
+									<Typography
+										variant='h6'
+										gutterBottom>
+										{store.store_name || 'Unknown Store'}
+									</Typography>
+									<Grid
+										container
+										spacing={2}>
+										{store.items.map(item => (
+											<Grid
+												item
+												xs={12}
+												md={6}
+												lg={4}
+												key={item.cart_id}>
+												<Card
+													variant='outlined'
+													sx={{ display: 'flex', mb: 1 }}>
+													{item.item_image_paths && item.item_image_paths.length > 0 && (
+														<div
+															style={{
+																position: 'relative',
+																width: '120px',
+																height: '120px',
+																marginRight: '1rem',
+															}}>
+															<Image
+																src={item.item_image_paths[0]}
+																alt={item.item_name || 'Item Image'}
+																layout='fill'
+																objectFit='contain'
+															/>
+														</div>
+													)}
+													<CardContent sx={{ flex: '1 0 auto', p: 1 }}>
+														<Typography variant='subtitle1'>{item.item_name || 'Unnamed Item'}</Typography>
+														<Typography
+															variant='body2'
+															color='text.secondary'>
+															{item.quantity} x Rp. {item.item_price || 0}
+														</Typography>
+														<Typography
+															variant='body2'
+															color='text.secondary'>
+															{item.item_description || ''}
+														</Typography>
+													</CardContent>
+												</Card>
+											</Grid>
+										))}
+									</Grid>
+								</CardContent>
+								<CardActions>
+									{store.url_not_paid && store.order_id && (
+										<>
+											<Button
+												variant='contained'
+												color='secondary'
+												onClick={() => handlePayNotPaid(store.url_not_paid, store.order_id, store.token)}>
+												Bayar Sekarang
+											</Button>
+											<Button
+												variant='outlined'
+												color='error'
+												onClick={() => handleCancelOrder(store.order_id)}>
+												Batalkan Pesanan
+											</Button>
+										</>
+									)}
+								</CardActions>
+							</Card>
+						))}
+					</div>
+				)}
+				{/*  */}
+
+				<Typography
+					variant='h4'
+					gutterBottom>
+					{hasCartItems ? 'Keranjang Belanja' : 'Keranjang Kosong'}
+				</Typography>
+				{/*  */}
+				{loading ? (
+					<div style={{ textAlign: 'center', marginTop: '2rem' }}>
+						<CircularProgress />
+					</div>
+				) : storeGroups.length === 0 ? (
+					<div style={{ textAlign: 'center', marginTop: '2rem', justifyContent: 'center' }}>
+						<Image
+							src={shopPng}
+							alt='Empty Cart'
+							width={200}
+							height={200}
+							style={{ margin: '1rem auto' }}
+						/>
+						<Button
+							variant='contained'
+							color='primary'
+							onClick={() => router.push('/')}>
+							Belanja Sekarang
+						</Button>
+					</div>
+				) : (
+					<Stack gap={2}>
+						{storeGroups.map(store => (
+							<Stack
+								padding={2}
+								border={1}
+								borderColor='#e0e0e0'
+								key={store.store_id || 'unknown-store'}>
 								<Typography
-									variant='h6'
+									variant='h5'
 									gutterBottom>
 									{store.store_name || 'Unknown Store'}
 								</Typography>
-								<Grid
-									container
-									spacing={2}>
-									{store.items.map(item => (
-										<Grid
-											item
-											xs={12}
-											md={6}
-											lg={4}
-											key={item.cart_id}>
-											<Card
-												variant='outlined'
-												sx={{ display: 'flex', mb: 1 }}>
-												{item.item_image_paths && item.item_image_paths.length > 0 && (
-													<div
-														style={{
-															position: 'relative',
-															width: '120px',
-															height: '120px',
-															marginRight: '1rem',
-														}}>
-														<Image
-															src={item.item_image_paths[0]}
-															alt={item.item_name || 'Item Image'}
-															layout='fill'
-															objectFit='contain'
-														/>
-													</div>
-												)}
-												<CardContent sx={{ flex: '1 0 auto', p: 1 }}>
-													<Typography variant='subtitle1'>{item.item_name || 'Unnamed Item'}</Typography>
-													<Typography
-														variant='body2'
-														color='text.secondary'>
-														{item.quantity} x Rp. {item.item_price || 0}
-													</Typography>
-													<Typography
-														variant='body2'
-														color='text.secondary'>
-														{item.item_description || ''}
-													</Typography>
-												</CardContent>
-											</Card>
-										</Grid>
-									))}
-								</Grid>
-							</CardContent>
-							<CardActions>
-								{store.url_not_paid && store.order_id && (
-									<>
+
+								<TableContainer component={Paper}>
+									<Table aria-label='store items table'>
+										<TableHead>
+											<TableRow>
+												<TableCell>Gambar</TableCell>
+												<TableCell>Barang</TableCell>
+												<TableCell>Harga (Rp.)</TableCell>
+												<TableCell>Jumlah</TableCell>
+												<TableCell align='center'></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											{store.items.map(item => {
+												const localQty = quantities[item.cart_id] !== undefined ? quantities[item.cart_id] : item.quantity;
+												return (
+													<TableRow key={item.cart_id}>
+														<TableCell>
+															{item.item_image_paths && item.item_image_paths.length > 0 && (
+																<div style={{ width: 60, height: 60, position: 'relative' }}>
+																	<Image
+																		src={item.item_image_paths[0]}
+																		alt={item.item_name || 'Item Image'}
+																		layout='fill'
+																		objectFit='contain'
+																	/>
+																</div>
+															)}
+														</TableCell>
+														<TableCell>{item.item_name || 'Unknown Item'}</TableCell>
+														<TableCell>{formatNumber(item.item_price || 0)}</TableCell>
+														<TableCell>
+															<TextField
+																type='number'
+																size='small'
+																value={localQty}
+																onChange={e => handleQtyChange(item.cart_id, Number(e.target.value))}
+																inputProps={{ min: 1 }}
+																sx={{ width: '80px' }}
+															/>
+														</TableCell>
+														<TableCell align='center'>
+															<Button
+																variant='contained'
+																color='primary'
+																size='small'
+																onClick={() => handleUpdateQty(item.cart_id, localQty)}
+																sx={{ mr: 1 }}>
+																Perbarui
+															</Button>
+															<IconButton
+																color='error'
+																size='small'
+																onClick={() => handleRemoveItem(item.cart_id)}>
+																<DeleteOutlineOutlinedIcon />
+															</IconButton>
+														</TableCell>
+													</TableRow>
+												);
+											})}
+											<TableRow>
+												<TableCell
+													colSpan={5}
+													align='right'>
+													<strong>Total : Rp. {formatNumber(store.items.reduce((acc, item) => acc + (item.item_price || 0) * (quantities[item.cart_id] || item.quantity), 0))}</strong>
+												</TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</TableContainer>
+								{hasCartItems && (
+									<div style={{ marginTop: '2rem', textAlign: 'right' }}>
 										<Button
 											variant='contained'
-											color='secondary'
-											onClick={() => handlePayNotPaid(store.url_not_paid, store.order_id, store.token)}>
-											Bayar Sekarang
+											color='primary'
+											sx={{
+												gap: 2,
+											}}
+											onClick={() => handleCheckout(store.store_id || '')}>
+											Checkout
 										</Button>
-										<Button
-											variant='outlined'
-											color='error'
-											onClick={() => handleCancelOrder(store.order_id)}>
-											Batalkan Pesanan
-										</Button>
-									</>
+									</div>
 								)}
-							</CardActions>
-						</Card>
-					))}
-				</div>
-			)}
-			{/*  */}
-
-			<Typography
-				variant='h4'
-				gutterBottom>
-				{hasCartItems ? 'Keranjang Belanja' : 'Keranjang Kosong'}
-			</Typography>
-			{/*  */}
-			{loading ? (
-				<div style={{ textAlign: 'center', marginTop: '2rem' }}>
-					<CircularProgress />
-				</div>
-			) : storeGroups.length === 0 ? (
-				<div style={{ textAlign: 'center', marginTop: '2rem', justifyContent: 'center' }}>
-					<Image
-						src={shopPng}
-						alt='Empty Cart'
-						width={200}
-						height={200}
-						style={{ margin: '1rem auto' }}
-					/>
-					<Button
-						variant='contained'
-						color='primary'
-						onClick={() => router.push('/')}>
-						Belanja Sekarang
-					</Button>
-				</div>
-			) : (
-				<div>
-					{storeGroups.map(store => (
-						<div
-							key={store.store_id || 'unknown-store'}
-							style={{ marginBottom: '2rem' }}>
-							<Typography
-								variant='h5'
-								gutterBottom>
-								{store.store_name || 'Unknown Store'}
-							</Typography>
-
-							<TableContainer component={Paper}>
-								<Table aria-label='store items table'>
-									<TableHead>
-										<TableRow>
-											<TableCell>Gambar</TableCell>
-											<TableCell>Barang</TableCell>
-											<TableCell>Keterangan</TableCell>
-											<TableCell>Kategori</TableCell>
-											<TableCell>Harga (Rp.)</TableCell>
-											<TableCell>Jumlah</TableCell>
-											<TableCell align='center'></TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-										{store.items.map(item => {
-											const localQty = quantities[item.cart_id] !== undefined ? quantities[item.cart_id] : item.quantity;
-											return (
-												<TableRow key={item.cart_id}>
-													<TableCell>
-														{item.item_image_paths && item.item_image_paths.length > 0 && (
-															<div style={{ width: 60, height: 60, position: 'relative' }}>
-																<Image
-																	src={item.item_image_paths[0]}
-																	alt={item.item_name || 'Item Image'}
-																	layout='fill'
-																	objectFit='contain'
-																/>
-															</div>
-														)}
-													</TableCell>
-													<TableCell>{item.item_name || 'Unknown Item'}</TableCell>
-													<TableCell>{item.item_description || 'No description available'}</TableCell>
-													<TableCell>{item.category_name || 'Uncategorized'}</TableCell>
-													<TableCell>{item.item_price || 0}</TableCell>
-													<TableCell>
-														<TextField
-															type='number'
-															size='small'
-															value={localQty}
-															onChange={e => handleQtyChange(item.cart_id, Number(e.target.value))}
-															inputProps={{ min: 1 }}
-															sx={{ width: '80px' }}
-														/>
-													</TableCell>
-													<TableCell align='center'>
-														<Button
-															variant='contained'
-															color='primary'
-															size='small'
-															onClick={() => handleUpdateQty(item.cart_id, localQty)}
-															sx={{ mr: 1 }}>
-															Perbarui
-														</Button>
-														<Button
-															variant='outlined'
-															color='error'
-															size='small'
-															onClick={() => handleRemoveItem(item.cart_id)}>
-															Hapus
-														</Button>
-													</TableCell>
-												</TableRow>
-											);
-										})}
-									</TableBody>
-								</Table>
-							</TableContainer>
-							{hasCartItems && (
-								<div style={{ marginTop: '2rem', textAlign: 'right' }}>
-									<Button
-										variant='contained'
-										color='primary'
-										onClick={() => handleCheckout(store.store_id || '')}>
-										Lanjutkan Pembayaran
-									</Button>
-								</div>
-							)}
-						</div>
-					))}
-				</div>
-				//
-			)}
-		</div>
+							</Stack>
+						))}
+					</Stack>
+					//
+				)}
+			</Stack>
+		</Stack>
 	);
 }
