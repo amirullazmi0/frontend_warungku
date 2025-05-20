@@ -2,16 +2,21 @@ import Image from 'next/image';
 import React from 'react';
 import PlaceIcon from '@mui/icons-material/Place';
 import defaultJpg from '@/public/default.webp';
+import { useRouter } from 'next/navigation';
 
 interface Props {
+	id: string;
 	image: string;
 	name: string;
 	kecamatan: string;
 	kota: string;
 }
 const CardStore = (props: Props) => {
+	const router = useRouter();
 	return (
-		<div className='card shadow-md bg-white'>
+		<button
+			onClick={() => router.push(`/store/${props.id}`)}
+			className='card shadow-md bg-white'>
 			<figure className='relative w-full aspect-square overflow-hidden p-4'>
 				<Image
 					alt={props.image ?? ''}
@@ -46,7 +51,7 @@ const CardStore = (props: Props) => {
 					</div>
 				</div>
 			</div>
-		</div>
+		</button>
 	);
 };
 

@@ -58,6 +58,7 @@ const Section = () => {
 				{items?.map(item => {
 					return (
 						<CardStore
+							id={item.id}
 							key={item.id}
 							image={item.logo}
 							name={item.name}

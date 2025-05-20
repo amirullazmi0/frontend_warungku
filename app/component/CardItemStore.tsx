@@ -10,6 +10,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { formatCurrency } from '../utils/formatCurrency';
 import { useFormContext } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 interface Props {
 	images: string | string[];
@@ -27,11 +28,11 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 	const accessToken = Cookies.get('accessToken');
 
 	const handleWishListStatus = () => {
-		console.log('wwkkw');
-
 		updateWishlist();
 		setWishListStatus(prev => !prev);
 	};
+
+	const route = useRouter();
 
 	const updateWishlist = async () => {
 		try {
@@ -68,9 +69,10 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 		}
 	};
 
-
 	return (
-		<button className='card bg-white shadow-xl relative'>
+		<button
+			onClick={() => route.push(`/store/${storeId}/${itemId}`)}
+			className='card bg-white shadow-xl relative'>
 			<figure className='relative w-full aspect-square overflow-hidden'>
 				<Image
 					src={typeof images === 'string' ? images : images[0]}

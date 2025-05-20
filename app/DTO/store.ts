@@ -7,6 +7,8 @@ export interface StoreResponse {
     address: StoreAddressResponse;
 }
 
+
+
 export interface StoreAddressResponse {
     id: string
     jalan: string
@@ -17,4 +19,17 @@ export interface StoreAddressResponse {
     kecamatan: string
     kota: string
     provinsi: string
+}
+
+interface ItemStore {
+    itemId: string;
+    itemName: string;
+    itemPrice: number;
+    itemDesc?: string
+    // Add more fields as necessary from the item_store table
+}
+
+export interface StoreWithItems {
+    storeId: string;
+    items: ItemStore[];
 }
