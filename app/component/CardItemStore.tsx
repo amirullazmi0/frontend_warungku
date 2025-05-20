@@ -70,10 +70,10 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 	};
 
 	return (
-		<button
-			onClick={() => route.push(`/store/${storeId}/${itemId}`)}
-			className='card bg-white shadow-xl relative'>
-			<figure className='relative w-full aspect-square overflow-hidden'>
+		<div className='card bg-white shadow-xl relative overflow-hidden'>
+			<button
+				onClick={() => route.push(`/store/${storeId}/${itemId}`)}
+				className='relative w-full aspect-square overflow-hidden'>
 				<Image
 					src={typeof images === 'string' ? images : images[0]}
 					alt='Product Image'
@@ -83,7 +83,7 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 					fill
 					className='object-cover hover:scale-105 duration-200 w-full'
 				/>
-			</figure>
+			</button>
 
 			<div className='card-body w-full text-left lg:text-sm md:text-xs text-[8px] lg:p-4 md:p-2 p-1'>
 				<h2 className='text-sm'>{name}</h2>
@@ -123,7 +123,7 @@ const CardItemStore: React.FC<Props> = ({ images, name, price, address, wishlist
 					</button>
 				</div>
 			</div>
-		</button>
+		</div>
 	);
 };
 
