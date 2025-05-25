@@ -69,11 +69,7 @@ const Section = () => {
 	};
 
 	useEffect(() => {
-		const debounceTimeout = setTimeout(() => {
-			fetchItemStores();
-		}, 300);
-
-		return () => clearTimeout(debounceTimeout);
+		fetchItemStores();
 	}, [keyword, category]);
 
 	const filteredItemIds = new Set(itemsFilter?.map(item => item.id) || []);
