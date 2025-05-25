@@ -25,51 +25,54 @@ const Section = () => {
 	const keyword = formNavContext.keyword?.trim() || null;
 	const category = formNavContext.category;
 
-	const fetchItemStores = async () => {
-		try {
-			setLoading(true);
-
-			const queryParams = new URLSearchParams();
-			if (keyword) queryParams.append('keyword', keyword);
-			if (category && category.length > 0) {
-				queryParams.append('category', category.join(','));
-			}
-
-			const apiUrl = process.env.API_URL;
-			if (!apiUrl) throw new Error('API_URL is not defined in environment variables');
-
-			if (!accessToken) throw new Error('Access token is missing');
-
-			const response = await axios.get<{
-				success: boolean;
-				data: { record: number; item: itemStore[] };
-			}>(`${apiUrl}/api/user/item-store?${queryParams.toString()}`, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-
-			if (response.data.success) {
-				if (keyword) {
-					setItemsFilter(response.data.data.item);
-				} else {
-					setItems(response.data.data.item);
-					setItemsFilter(null);
-				}
-			} else {
-				console.warn('API request failed:', response.data);
-				setItems([]);
-				setItemsFilter([]);
-			}
-		} catch (error: any) {
-			console.error('Failed to fetch item stores:', error.response?.data || error.message);
-		} finally {
-			setLoading(false);
-		}
-	};
-
 	useEffect(() => {
+		const fetchItemStores = async () => {
+			try {
+				setLoading(true);
+
+				const queryParams = new URLSearchParams();
+				if (keyword) queryParams.append('keyword', keyword);
+				if (category && category.length > 0) {
+					queryParams.append('category', category.join(','));
+				}
+
+				const apiUrl = process.env.API_URL;
+				if (!apiUrl) throw new Error('API_URL is not defined in environment variables');
+
+				if (!accessToken) throw new Error('Access token is missing');
+
+				const response = await axios.get<{
+					success: boolean;
+					data: { record: number; item: itemStore[] };
+				}>(`${apiUrl}/api/user/item-store?${queryParams.toString()}`, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+					},
+				});
+
+				if (response.data.success) {
+					if (keyword) {
+						setItemsFilter(response.data.data.item);
+					} else {
+						setItems(response.data.data.item);
+						setItemsFilter(null);
+					}
+				} else {
+					console.warn('API request failed:', response.data);
+					setItems([]);
+					setItemsFilter([]);
+				}
+			} catch (error: any) {
+				console.error('Failed to fetch item stores:', error.response?.data || error.message);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		const debounceTimeout = setTimeout(() => {}, 300);
 		fetchItemStores();
+
+		return () => clearTimeout(debounceTimeout);
 	}, [keyword, category]);
 
 	const filteredItemIds = new Set(itemsFilter?.map(item => item.id) || []);
