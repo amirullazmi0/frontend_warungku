@@ -1,79 +1,78 @@
 'use client';
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import Tron from './component/user/Tron';
 import CardItemStore from './component/CardItemStore';
 import Cookies from 'js-cookie';
 import { itemStore } from './DTO/itemStore';
 import defaultJpg from '@/public/default.webp';
-import { Box, Divider, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { FormNavContext } from './component/context/FormNavContext';
 
-const Section = () => {
+const SectionInner = () => {
+	const formNavContext = useContext(FormNavContext);
+
+	if (!formNavContext) {
+		throw new Error('FormNavContext is not provided!');
+	}
+
 	const [items, setItems] = useState<itemStore[]>([]);
 	const [itemsFilter, setItemsFilter] = useState<itemStore[] | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 	const accessToken = Cookies.get('accessToken');
 
-	const formNavContext = useContext(FormNavContext);
-	if (!formNavContext) {
-		console.error('Error: FormNavContext is not provided!');
-		return null;
-	}
-
 	const keyword = formNavContext.keyword?.trim() || null;
 	const category = formNavContext.category;
 
-	useEffect(() => {
-		const fetchItemStores = async () => {
-			try {
-				setLoading(true);
+	const fetchItemStores = useCallback(async () => {
+		try {
+			setLoading(true);
 
-				const queryParams = new URLSearchParams();
-				if (keyword) queryParams.append('keyword', keyword);
-				if (category && category.length > 0) {
-					queryParams.append('category', category.join(','));
-				}
-
-				const apiUrl = process.env.API_URL;
-				if (!apiUrl) throw new Error('API_URL is not defined in environment variables');
-
-				if (!accessToken) throw new Error('Access token is missing');
-
-				const response = await axios.get<{
-					success: boolean;
-					data: { record: number; item: itemStore[] };
-				}>(`${apiUrl}/api/user/item-store?${queryParams.toString()}`, {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-					},
-				});
-
-				if (response.data.success) {
-					if (keyword) {
-						setItemsFilter(response.data.data.item);
-					} else {
-						setItems(response.data.data.item);
-						setItemsFilter(null);
-					}
-				} else {
-					console.warn('API request failed:', response.data);
-					setItems([]);
-					setItemsFilter([]);
-				}
-			} catch (error: any) {
-				console.error('Failed to fetch item stores:', error.response?.data || error.message);
-			} finally {
-				setLoading(false);
+			const queryParams = new URLSearchParams();
+			if (keyword) queryParams.append('keyword', keyword);
+			if (category && category.length > 0) {
+				queryParams.append('category', category.join(','));
 			}
-		};
 
-		const debounceTimeout = setTimeout(() => {}, 300);
+			const apiUrl = process.env.API_URL;
+			if (!apiUrl) throw new Error('API_URL is not defined in environment variables');
+
+			if (!accessToken) throw new Error('Access token is missing');
+
+			const response = await axios.get<{
+				success: boolean;
+				data: { record: number; item: itemStore[] };
+			}>(`${apiUrl}/api/user/item-store?${queryParams.toString()}`, {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+			});
+
+			if (response.data.success) {
+				if (keyword) {
+					setItemsFilter(response.data.data.item);
+				} else {
+					setItems(response.data.data.item);
+					setItemsFilter(null);
+				}
+			} else {
+				console.warn('API request failed:', response.data);
+				setItems([]);
+				setItemsFilter([]);
+			}
+		} catch (error: any) {
+			console.error('Failed to fetch item stores:', error.response?.data || error.message);
+			setItems([]);
+			setItemsFilter([]);
+		} finally {
+			setLoading(false);
+		}
+	}, [keyword, category, accessToken]);
+
+	useEffect(() => {
 		fetchItemStores();
-
-		return () => clearTimeout(debounceTimeout);
-	}, [keyword, category]);
+	}, [fetchItemStores]);
 
 	const filteredItemIds = new Set(itemsFilter?.map(item => item.id) || []);
 	const otherItems = items.filter(item => !filteredItemIds.has(item.id));
@@ -81,7 +80,7 @@ const Section = () => {
 	if (loading) {
 		return (
 			<section>
-				<div className='p-5 text-center'>Loading items...</div>;
+				<div className='p-5 text-center'>Loading items...</div>
 			</section>
 		);
 	}
@@ -99,8 +98,8 @@ const Section = () => {
 								storeId={item.store.id}
 								storeName={item.store.name}
 								name={item.name}
-								address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
-								images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
+								address={item.storeAddress?.kota ?? 'Unknown address'}
+								images={item.itemStorageImage[0]?.path ?? defaultJpg.src}
 								price={item.price}
 								wishlist={item.wishlist}
 								itemId={item.id}
@@ -117,8 +116,8 @@ const Section = () => {
 								storeId={item.store.id}
 								storeName={item.store.name}
 								name={item.name}
-								address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
-								images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
+								address={item.storeAddress?.kota ?? 'Unknown address'}
+								images={item.itemStorageImage[0]?.path ?? defaultJpg.src}
 								price={item.price}
 								wishlist={item.wishlist}
 								itemId={item.id}
@@ -127,14 +126,14 @@ const Section = () => {
 					</>
 				)}
 
-				{keyword && otherItems.length == 0 && (
+				{keyword && otherItems.length === 0 && (
 					<>
 						<Typography className='col-span-full text-xl font-bold'>Hasil Pencarian:</Typography>
 						<Box className='lg:col-span-6 md:col-span-4 col-span-2 w-full'>
 							<Typography
-								className='pt-10 mb-10'
 								variant='h3'
-								textAlign={'center'}>
+								textAlign='center'
+								className='pt-10 mb-10'>
 								Tidak Ada Item
 							</Typography>
 						</Box>
@@ -145,8 +144,8 @@ const Section = () => {
 								storeId={item.store.id}
 								storeName={item.store.name}
 								name={item.name}
-								address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
-								images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
+								address={item.storeAddress?.kota ?? 'Unknown address'}
+								images={item.itemStorageImage[0]?.path ?? defaultJpg.src}
 								price={item.price}
 								wishlist={item.wishlist}
 								itemId={item.id}
@@ -164,8 +163,8 @@ const Section = () => {
 								storeId={item.store.id}
 								storeName={item.store.name}
 								name={item.name}
-								address={item.storeAddress?.kota ? item.storeAddress.kota : 'Unknown address'}
-								images={item.itemStorageImage[0]?.path ? item.itemStorageImage[0].path : defaultJpg.src}
+								address={item.storeAddress?.kota ?? 'Unknown address'}
+								images={item.itemStorageImage[0]?.path ?? defaultJpg.src}
 								price={item.price}
 								wishlist={item.wishlist}
 								itemId={item.id}
@@ -176,6 +175,13 @@ const Section = () => {
 			</div>
 		</section>
 	);
+};
+
+const Section = () => {
+	// Here you can optionally do context existence check or render fallback UI
+	// But do NOT call hooks conditionally here
+
+	return <SectionInner />;
 };
 
 export default Section;
