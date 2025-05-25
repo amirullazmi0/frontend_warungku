@@ -1,6 +1,5 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import { Input } from '@mui/base/Input';
 import { Alert, Button, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput, TextField } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
@@ -54,10 +53,9 @@ const Section = () => {
 
 	const onSubmit: SubmitHandler<Inputs> = async data => {
 		try {
-            
 			const response = await axios.post(`${API_URL}/auth/register`, data);
 			console.log(response.data);
-            
+
 			if (response.data.success) {
 				reset();
 				setSubmitSuccess(true);
