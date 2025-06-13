@@ -208,6 +208,8 @@ export default function CartPage() {
 							router.push('/cart');
 							router.refresh();
 						} catch (updateError) {
+							console.log('Error updating payment status:', updateError);
+
 							fetchCartItems();
 							console.error('Error updating payment status:', updateError);
 							alert('Payment succeeded, but failed to update payment status.');
@@ -312,18 +314,7 @@ export default function CartPage() {
 		<Stack
 			sx={{ padding: '1rem', minHeight: '100vh' }}
 			alignItems='center'>
-			{/*  */}
-			<Stack
-				sx={{
-					minWidth: {
-						xs: '100%',
-						md: '60rem',
-					},
-					maxWidth: {
-						xs: '100%',
-						md: '70rem',
-					},
-				}}>
+			<Stack sx={{ minWidth: { xs: '100%', md: '60rem' }, maxWidth: { xs: '100%', md: '70rem' } }}>
 				{pendingOrders.length > 0 && (
 					<div style={{ marginBottom: '1rem' }}>
 						<Typography
@@ -334,12 +325,7 @@ export default function CartPage() {
 						{pendingOrders.map(store => (
 							<Card
 								key={store.store_id || 'unknown-store'}
-								sx={{
-									mb: 2,
-									p: 1,
-									backgroundColor: '#f9f9f9',
-									mx: 'auto',
-								}}>
+								sx={{ mb: 2, p: 1, backgroundColor: '#f9f9f9', mx: 'auto' }}>
 								<CardContent>
 									<Typography
 										variant='h6'
@@ -360,13 +346,7 @@ export default function CartPage() {
 													variant='outlined'
 													sx={{ display: 'flex', mb: 1 }}>
 													{item.item_image_paths && item.item_image_paths.length > 0 && (
-														<div
-															style={{
-																position: 'relative',
-																width: '120px',
-																height: '120px',
-																marginRight: '1rem',
-															}}>
+														<div style={{ position: 'relative', width: '120px', height: '120px', marginRight: '1rem' }}>
 															<Image
 																src={item.item_image_paths[0]}
 																alt={item.item_name || 'Item Image'}
@@ -416,7 +396,6 @@ export default function CartPage() {
 					</div>
 				)}
 				{/*  */}
-
 				<Typography
 					variant='h4'
 					gutterBottom>
@@ -542,7 +521,6 @@ export default function CartPage() {
 							</Stack>
 						))}
 					</Stack>
-					//
 				)}
 			</Stack>
 		</Stack>
