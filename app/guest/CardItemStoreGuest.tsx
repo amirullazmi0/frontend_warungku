@@ -48,10 +48,10 @@ const CardItemStoreGuest: React.FC<Props> = ({ images, name, price, address, ite
 	return (
 		<div className='card bg-white shadow-xl relative overflow-hidden'>
 			{errorStatus && (
-				<div className='mb-4'>
+				<div className='mb-4 absolute z-30 p-5'>
 					<Alert
 						severity='error'
-						className='capitalize'>
+						className='capitalize rounded-lg'>
 						{errorMessage}
 					</Alert>
 				</div>
