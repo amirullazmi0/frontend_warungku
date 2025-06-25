@@ -6,34 +6,29 @@ import { checkAuth } from "./app/component/CheckAuth";
 export async function middleware(request: NextRequest) {
     let accessToken = request.cookies.get('accessToken')
     const API_URL = process.env.API_URL
+
     if (!accessToken) {
         request.cookies.delete('accessToken')
-        if (request.nextUrl.pathname == ('/')) {
-            return NextResponse.redirect(new URL("/login/user-account", request.url))
-        } else if (request.nextUrl.pathname.startsWith('/store')) {
-            return NextResponse.redirect(new URL("/login/store-account", request.url))
+
+        // If user does not have accessToken and tries to visit '/', redirect to '/guest'
+        if (request.nextUrl.pathname === '/') {
+            return NextResponse.redirect(new URL("/guest", request.url))
         }
     } else {
         try {
-            // const response = await axios.get(`${API_URL}/auth/check-auth`, {
-            //     headers: {
-            //         Authorization: `Bearer ${accessToken}`
-            //     }
-            // })
-
-
-            // console.log(response.data);
-
-            // if (!response.data) {
-            //     request.cookies.delete('accessToken')
-            // }
             await checkAuth(request)
+
+            // If user is authenticated and tries to visit '/guest', redirect to '/'
+            if (request.nextUrl.pathname === '/guest') {
+                return NextResponse.redirect(new URL("/", request.url))
+            }
 
         } catch (error) {
             request.cookies.delete('accessToken')
         }
     }
 
+    return NextResponse.next();
 }
 
 export const config = {

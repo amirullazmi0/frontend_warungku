@@ -16,9 +16,6 @@ RUN npm install --legacy-peer-deps
 # Salin seluruh source code
 COPY . .
 
-# Build Next.js app (output di .next)
-RUN npm run build
-
 # Expose port default Next.js
 EXPOSE 3000
 
