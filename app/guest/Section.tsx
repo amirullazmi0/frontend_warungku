@@ -140,7 +140,6 @@ const SectionInner = () => {
 				{/* Items without keyword */}
 				{!keyword && otherItems.length > 0 && (
 					<>
-						<Typography className='col-span-full text-xl font-bold'>Barang Lainnya:</Typography>
 						{otherItems.map(item => (
 							<CardItemStoreGuest
 								key={item.id}
